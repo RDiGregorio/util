@@ -68,7 +68,7 @@ export class ObservableMap extends Map {
     }
 
     /**
-     * Assigns a value. Dispatches an "update" even if the `ObservableMap` is modified. Returns the `ObservableMap`.
+     * Assigns a value. Dispatches an "update" event if the `ObservableMap` is modified. Returns the `ObservableMap`.
      * @param {string} key
      * @param {any} value
      * @return {ObservableMap}
