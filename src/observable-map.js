@@ -83,5 +83,3 @@ export class ObservableMap extends Map {
         return this;
     }
 }
-
-console.log(new ObservableMap([['a', 0], ['b', 1], ['c', 2]]));
