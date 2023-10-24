@@ -3,7 +3,7 @@
  */
 
 export class MultiMap {
-    #internal = new Map();
+    #map = new Map();
 
     /**
      * Returns the number of entries.
@@ -11,7 +11,7 @@ export class MultiMap {
      */
 
     get size() {
-        return [...this.#internal.values()].reduce((result, value) => result + value.size, 0);
+        return [...this.#map.values()].reduce((result, value) => result + value.size, 0);
     }
 
     /**
@@ -20,8 +20,8 @@ export class MultiMap {
      */
 
     * [Symbol.iterator]() {
-        for (const key of this.#internal.keys())
-            for (const value of this.#internal.get(key))
+        for (const key of this.#map.keys())
+            for (const value of this.#map.get(key))
                 yield [key, value];
     }
 
@@ -33,10 +33,10 @@ export class MultiMap {
      */
 
     delete(key, value) {
-        if (!this.#internal.has(key)) return false;
-        if (arguments.length === 1) return this.#internal.delete(key);
-        const result = this.#internal.get(key).delete(value);
-        if (this.#internal.get(key).size === 0) this.#internal.delete(key);
+        if (!this.#map.has(key)) return false;
+        if (arguments.length === 1) return this.#map.delete(key);
+        const result = this.#map.get(key).delete(value);
+        if (this.#map.get(key).size === 0) this.#map.delete(key);
         return result;
     }
 
@@ -46,8 +46,8 @@ export class MultiMap {
      */
 
     * entries() {
-        for (const key of this.#internal.keys())
-            for (const value of this.#internal.get(key))
+        for (const key of this.#map.keys())
+            for (const value of this.#map.get(key))
                 yield [key, value];
     }
 
@@ -58,8 +58,8 @@ export class MultiMap {
      */
 
     forEach(callback, self = this) {
-        for (const key of this.#internal.keys())
-            for (const value of this.#internal.get(key))
+        for (const key of this.#map.keys())
+            for (const value of this.#map.get(key))
                 callback.apply(self, [value, key, this]);
     }
 
@@ -70,8 +70,8 @@ export class MultiMap {
      */
 
     * get(key) {
-        if (this.#internal.has(key))
-            for (const value of this.#internal.get(key))
+        if (this.#map.has(key))
+            for (const value of this.#map.get(key))
                 yield value;
     }
 
@@ -83,8 +83,8 @@ export class MultiMap {
      */
 
     set(key, value) {
-        if (!this.#internal.has(key)) this.#internal.set(key, new Set());
-        this.#internal.get(key).add(value);
+        if (!this.#map.has(key)) this.#map.set(key, new Set());
+        this.#map.get(key).add(value);
         return this;
     }
 
@@ -94,8 +94,8 @@ export class MultiMap {
      */
 
     * values() {
-        for (const key of this.#internal.keys())
-            for (const value of this.#internal.get(key))
+        for (const key of this.#map.keys())
+            for (const value of this.#map.get(key))
                 yield value;
     }
 }
