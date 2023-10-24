@@ -1,12 +1,22 @@
 import {MultiMap} from './multi-map.js';
 
 /**
- * A map that dispatches an event when modified.
+ * A map that dispatches an event when modified. Events propagate to each parent `ObservableMap`.
  */
 
 export class ObservableMap extends Map {
     #eventListeners = new Map();
     #parentKeys = new MultiMap();
+
+    /**
+     * Creates a new `ObservableMap`.
+     * @param {Iterable<any>} [entries]
+     */
+
+    constructor(entries) {
+        super();
+        if (arguments.length !== 0) [...entries].forEach(entry => this.set(...entry));
+    }
 
     /**
      * Adds an event listener. Returns a function that removes the event listener.
@@ -73,3 +83,5 @@ export class ObservableMap extends Map {
         return this;
     }
 }
+
+console.log(new ObservableMap([['a', 0], ['b', 1], ['c', 2]]));
