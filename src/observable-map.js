@@ -15,7 +15,7 @@ export class ObservableMap extends Map {
 
     constructor(entries) {
         super();
-        if (arguments.length !== 0) [...entries].forEach(entry => this.set(...entry));
+        if (arguments.length === 1) [...entries].forEach(entry => this.set(...entry));
     }
 
     /**
