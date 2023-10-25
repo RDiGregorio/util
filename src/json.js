@@ -17,7 +17,7 @@ export function isJsonPrimitive(value) {
  * @return {any}
  */
 
-function mapReplacer(key, value) {
+export function mapReplacer(key, value) {
     if (!_.isUndefined(value) && !_.isNull(value) && value instanceof Map)
         return {__class__: value.constructor.name, __entries__: [...value]};
 
@@ -30,7 +30,7 @@ function mapReplacer(key, value) {
  * @return {function(any, any): any}
  */
 
-function createMapReviver(types) {
+export function createMapReviver(types) {
     const map = new Map(types.map(type => [type.name, type]));
 
     return (key, value) => {
