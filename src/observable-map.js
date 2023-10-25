@@ -68,6 +68,16 @@ export class ObservableMap extends Map {
     }
 
     /**
+     * Returns the value from `path`.
+     * @param {any[]} path
+     * @return {any}
+     */
+
+    getFromPath(path) {
+        return path.reduce((result, key) => result?.get(key), this);
+    }
+
+    /**
      * Assigns a value. Dispatches an "update" event if the `ObservableMap` is modified. Returns the `ObservableMap`.
      * @param {string} key
      * @param {any} value
