@@ -31,6 +31,7 @@ describe('mapReplacer and createMapReviver', function () {
             string = JSON.stringify(input, mapReplacer),
             output = JSON.parse(string, createMapReviver([Map, ObservableMap]));
 
+        expect(output instanceof ObservableMap).to.equal(true);
         expect(input).to.eql(output);
         done();
     });
