@@ -12,4 +12,25 @@ describe('MultiMap', function () {
         expect([...multiMap.get('b')]).to.eql([2]);
         done();
     });
+
+    it('can delete entries', function (done) {
+        const multiMap = new MultiMap();
+        multiMap.set('a', 0);
+        multiMap.set('a', 1);
+        multiMap.delete('a', 0);
+        expect([...multiMap.get('a')]).to.eql([1]);
+        multiMap.delete('a', 1);
+        expect(multiMap.has('a')).to.equal(false);
+        done();
+    });
+
+    it('has the correct size', function (done) {
+        const multiMap = new MultiMap();
+        multiMap.set('a', 0);
+        multiMap.set('a', 0);
+        multiMap.set('a', 1);
+        multiMap.set('b', 2);
+        expect(multiMap.size).to.equal(4);
+        done();
+    });
 });

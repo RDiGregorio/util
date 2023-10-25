@@ -11,7 +11,7 @@ export class MultiMap {
      */
 
     get size() {
-        return [...this.#map.values()].reduce((result, value) => result + value.size, 0);
+        return [...this.#map.values()].reduce((result, value) => result + value.length, 0);
     }
 
     /**
@@ -37,7 +37,7 @@ export class MultiMap {
         if (arguments.length === 1) return this.#map.delete(key);
         const array = this.#map.get(key), result = array.includes(value);
         if (result) array.splice(array.indexOf(value), 1);
-        if (this.#map.get(key).size === 0) this.#map.delete(key);
+        if (this.#map.get(key).length === 0) this.#map.delete(key);
         return result;
     }
 
@@ -74,6 +74,16 @@ export class MultiMap {
         if (this.#map.has(key))
             for (const value of this.#map.get(key))
                 yield value;
+    }
+
+    /**
+     * Returns true if an entry for `key` exists.
+     * @param {any} key
+     * @return {boolean}
+     */
+
+    has(key) {
+        return this.#map.has(key);
     }
 
     /**
