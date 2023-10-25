@@ -26,11 +26,14 @@ describe('MultiMap', function () {
 
     it('has the correct size', function (done) {
         const multiMap = new MultiMap();
+        expect(multiMap.size).to.equal(0);
         multiMap.set('a', 0);
         multiMap.set('a', 0);
         multiMap.set('a', 1);
         multiMap.set('b', 2);
         expect(multiMap.size).to.equal(4);
+        multiMap.delete('a', 0);
+        expect(multiMap.size).to.equal(3);
         done();
     });
 });
