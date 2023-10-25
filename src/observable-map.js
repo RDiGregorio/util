@@ -68,11 +68,27 @@ export class ObservableMap extends Map {
     }
 
     /**
-     * Mirrors an event trigger, possibly causing entries to be deleted or updated, and dispatches a new event.
+     * Assigns a value. Dispatches an "update" event if the `ObservableMap` is modified. Returns the `ObservableMap`.
+     * @param {string} key
+     * @param {any} value
+     * @return {ObservableMap}
+     */
+
+    set(key, value) {
+        if (this.has(key) && this.get(key) === value) return this;
+        if (this.get(key) instanceof ObservableMap) this.get(key).#parentKeys.delete(this, key);
+        super.set(key, value);
+        if (value instanceof ObservableMap) value.#parentKeys.set(this, key);
+        this.dispatchEvent({type: 'update', path: [key], value: value});
+        return this;
+    }
+
+    /**
+     * Triggers an identical event to be dispatched by possibly deleting or updating entries.
      * @param {{type: string, path: any[], value: any}} event
      */
 
-    mirrorEventTrigger(event) {
+    triggerEvent(event) {
         if (event.type === 'delete') {
             if (event.path.length === 0) throw new Error('missing key for delete event');
             const path = [...event.path], key = path.pop(), map = path.reduce((result, key) => result.get(key), this);
@@ -94,21 +110,5 @@ export class ObservableMap extends Map {
             path: [],
             value: event.value
         });
-    }
-
-    /**
-     * Assigns a value. Dispatches an "update" event if the `ObservableMap` is modified. Returns the `ObservableMap`.
-     * @param {string} key
-     * @param {any} value
-     * @return {ObservableMap}
-     */
-
-    set(key, value) {
-        if (this.has(key) && this.get(key) === value) return this;
-        if (this.get(key) instanceof ObservableMap) this.get(key).#parentKeys.delete(this, key);
-        super.set(key, value);
-        if (value instanceof ObservableMap) value.#parentKeys.set(this, key);
-        this.dispatchEvent({type: 'update', path: [key], value: value});
-        return this;
     }
 }
