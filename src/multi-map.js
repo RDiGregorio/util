@@ -85,7 +85,7 @@ export class MultiMap {
 
     set(key, value) {
         if (!this.#map.has(key)) this.#map.set(key, []);
-        this.#map.get(key).add(value);
+        this.#map.get(key).push(value);
         return this;
     }
 
