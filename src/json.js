@@ -18,10 +18,7 @@ export function isJsonPrimitive(value) {
  */
 
 export function mapReplacer(key, value) {
-    if (!_.isUndefined(value) && !_.isNull(value) && value instanceof Map)
-        return {__class__: value.constructor.name, __entries__: [...value]};
-
-    return value;
+    return value instanceof Map ? {__class__: value.constructor.name, __entries__: [...value]} : value;
 }
 
 /**
@@ -34,7 +31,7 @@ export function createMapReviver(types) {
     const map = new Map(types.map(type => [type.name, type]));
 
     return (key, value) => {
-        if (_.isPlainObject(value) && '__class__' in value && '__entries__' in value) {
+        if (_.isObject(value) && '__class__' in value && '__entries__' in value) {
             if (!map.has(value.__class__)) throw new Error(`missing class: ${value.__class__}`);
             return value.__entries__.reduce((result, entry) => result.set(...entry), new (map.get(value.__class__)));
         }
