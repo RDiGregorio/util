@@ -68,7 +68,7 @@ export class ObservableMap extends Map {
     }
 
     /**
-     * Mirrors an event trigger, causing entries to be deleted or updated, and new event to be dispatched.
+     * Mirrors an event trigger, possibly causing entries to be deleted or updated, and a new event to be dispatched.
      * @param {{type: string, path: any[], value: any}} event
      */
 
