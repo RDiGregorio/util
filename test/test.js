@@ -29,7 +29,7 @@ describe('mapReplacer and createMapReviver', function () {
         const
             input = new ObservableMap([['a', 0], ['b', 1], ['c', {'d': [0, 1, 2]}]]),
             string = JSON.stringify(input, mapReplacer),
-            output = JSON.parse(string, createMapReviver([ObservableMap]));
+            output = JSON.parse(string, createMapReviver([Map, ObservableMap]));
 
         expect(input).to.eql(output);
         done();
