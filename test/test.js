@@ -10,8 +10,8 @@ describe('isJsonPrimitive', function () {
         expect(isJsonPrimitive(0)).to.equal(true);
         expect(isJsonPrimitive(-1)).to.equal(true);
         expect(isJsonPrimitive(-1.5)).to.equal(true);
-        expect(isJsonPrimitive("")).to.equal(true);
-        expect(isJsonPrimitive("abc")).to.equal(true);
+        expect(isJsonPrimitive('')).to.equal(true);
+        expect(isJsonPrimitive('abc')).to.equal(true);
         done();
     });
 
