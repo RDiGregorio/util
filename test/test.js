@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {isJsonPrimitive} from '../src/json.js';
+import {createMapReviver, isJsonPrimitive, mapReplacer} from '../src/json.js';
 
 describe('isJsonPrimitive', function () {
     it('returns true for JSON primitives', function (done) {
@@ -19,6 +19,18 @@ describe('isJsonPrimitive', function () {
         expect(isJsonPrimitive(Infinity)).to.equal(false);
         expect(isJsonPrimitive({})).to.equal(false);
         expect(isJsonPrimitive([])).to.equal(false);
+        done();
+    });
+});
+
+describe('mapReplacer and createMapReviver', function () {
+    it('can replace and revive maps', function (done) {
+        const
+            input = new Map([['a', 0], ['b', 1], ['c', 2]]),
+            string = JSON.stringify(input, mapReplacer),
+            output = JSON.parse(string, createMapReviver([Map]));
+
+        expect(input).to.eql(output);
         done();
     });
 });

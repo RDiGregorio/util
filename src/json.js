@@ -34,7 +34,7 @@ export function createMapReviver(types) {
     const map = new Map(types.map(type => [type.name, type]));
 
     return (key, value) => {
-        if (!_.isUndefined(value) && !_.isNull(value) && '__class__' in value && '__entries__' in value) {
+        if (_.isPlainObject(value) && '__class__' in value && '__entries__' in value) {
             if (!map.has(value.__class__)) throw new Error(`missing class: ${value.__class__}`);
             return value.__entries__.reduce((result, entry) => result.set(...entry), new (map.get(value.__class__)));
         }
