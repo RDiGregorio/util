@@ -17,6 +17,7 @@ describe('isJsonPrimitive', function () {
 
     it('returns false otherwise', function (done) {
         expect(isJsonPrimitive(undefined)).to.equal(false);
+        expect(isJsonPrimitive(NaN)).to.equal(false);
         expect(isJsonPrimitive(Infinity)).to.equal(false);
         expect(isJsonPrimitive({})).to.equal(false);
         expect(isJsonPrimitive([])).to.equal(false);

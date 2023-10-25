@@ -12,7 +12,7 @@ export function isJsonPrimitive(value) {
 
 /**
  * A replacer for `JSON.stringify` that can encode `Map` objects.
- * @param {string} key
+ * @param {any} key
  * @param {any} value
  * @return {any}
  */
