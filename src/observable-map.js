@@ -20,7 +20,7 @@ export class ObservableMap extends Map {
 
     /**
      * Adds an event listener. Returns a function that removes the event listener.
-     * @param {function({type, path, value}): void} callback
+     * @param {function({type: string, path: any[], value: any}): void} callback
      * @return {function(): void}
      */
 
@@ -57,7 +57,7 @@ export class ObservableMap extends Map {
 
     /**
      * Dispatches an event to each event listener.
-     * @param {{type, path, value}} event
+     * @param {{type: string, path: any[], value: any}} event
      */
 
     dispatchEvent(event) {
@@ -69,7 +69,7 @@ export class ObservableMap extends Map {
 
     /**
      * Mirrors an event trigger, causing entries to be deleted or updated, and new event to be dispatched.
-     * @param {{type, path, value}} event
+     * @param {{type: string, path: any[], value: any}} event
      */
 
     mirrorEventTrigger(event) {
