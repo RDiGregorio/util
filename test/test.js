@@ -1,5 +1,6 @@
 import {expect} from 'chai';
 import {createMapReviver, isJsonPrimitive, mapReplacer} from '../src/json.js';
+import {ObservableMap} from '../src/observable-map.js';
 
 describe('isJsonPrimitive', function () {
     it('returns true for JSON primitives', function (done) {
@@ -26,9 +27,9 @@ describe('isJsonPrimitive', function () {
 describe('mapReplacer and createMapReviver', function () {
     it('can replace and revive maps', function (done) {
         const
-            input = new Map([['a', 0], ['b', 1], ['c', 2]]),
+            input = new ObservableMap([['a', 0], ['b', 1], ['c', {'d': [0, 1, 2]}]]),
             string = JSON.stringify(input, mapReplacer),
-            output = JSON.parse(string, createMapReviver([Map]));
+            output = JSON.parse(string, createMapReviver([ObservableMap]));
 
         expect(input).to.eql(output);
         done();
