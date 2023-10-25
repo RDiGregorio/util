@@ -68,22 +68,24 @@ export class ObservableMap extends Map {
     }
 
     /**
-     * Mirrors an event trigger, possibly causing entries to be deleted or updated. Dispatches a new event.
+     * Mirrors an event trigger, possibly causing entries to be deleted or updated, and dispatches a new event.
      * @param {{type: string, path: any[], value: any}} event
      */
 
     mirrorEventTrigger(event) {
         if (event.type === 'delete') {
-            if (event.path.length === 0) throw new Error('missing key for delete');
-            const path = [...event.path], key = path.pop();
-            path.reduce((result, key) => result.get(key), this).delete(key);
+            if (event.path.length === 0) throw new Error('missing key for delete event');
+            const path = [...event.path], key = path.pop(), map = path.reduce((result, key) => result.get(key), this);
+            if (!map.has(key)) throw new Error('failed to trigger delete event');
+            map.delete(key);
             return;
         }
 
         if (event.type === 'update') {
-            if (event.path.length === 0) throw new Error('missing key for update');
-            const path = [...event.path], key = path.pop();
-            path.reduce((result, key) => result.get(key), this).set(key, event.value);
+            if (event.path.length === 0) throw new Error('missing key for update event');
+            const path = [...event.path], key = path.pop(), map = path.reduce((result, key) => result.get(key), this);
+            if (map.has(key) && map.get(key) === event.value) throw new Error('failed to trigger update event');
+            map.set(key, event.value);
             return;
         }
 
