@@ -104,7 +104,7 @@ export class ObservableMap extends Map {
      */
 
     set(key, value) {
-        if (this.get(key) === value) return this;
+        if (this.has(key) && this.get(key) === value) return this;
         if (this.get(key) instanceof ObservableMap) this.get(key).#parentKeys.delete(this, key);
         super.set(key, value);
         if (value instanceof ObservableMap) value.#parentKeys.set(this, key);
