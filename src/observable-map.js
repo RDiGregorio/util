@@ -56,7 +56,7 @@ export class ObservableMap extends Map {
     }
 
     /**
-     * Dispatches an event to each event listener.
+     * Dispatches an event to each event listener. Events propagate to each parent `ObservableMap`.
      * @param {{type: string, path: any[], value: any}} event
      */
 
@@ -84,7 +84,8 @@ export class ObservableMap extends Map {
     }
 
     /**
-     * Triggers an identical event to be dispatched by possibly deleting or updating entries.
+     * Triggers an event to be dispatched, propagating from `path`, by deleting or updating entries for "delete" or
+     * "update" events.
      * @param {{type: string, path: any[], value: any}} event
      */
 
