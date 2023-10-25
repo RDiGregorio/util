@@ -68,13 +68,30 @@ export class ObservableMap extends Map {
     }
 
     /**
-     * Returns the value from `path`.
-     * @param {any[]} path
-     * @return {any}
+     * Mirrors an event trigger, causing entries to be deleted or updated, and new event to be dispatched.
+     * @param {{type, path, value}} event
      */
 
-    getFromPath(path) {
-        return path.reduce((result, key) => result?.get(key), this);
+    mirrorEventTrigger(event) {
+        if (event.type === 'delete') {
+            if (event.path.length === 0) throw new Error('missing key for delete');
+            const path = [...event.path], key = path.pop();
+            path.reduce((result, key) => result.get(key), this).delete(key);
+            return;
+        }
+
+        if (event.type === 'update') {
+            if (event.path.length === 0) throw new Error('missing key for update');
+            const path = [...event.path], key = path.pop();
+            path.reduce((result, key) => result.get(key), this).set(key, event.value);
+            return;
+        }
+
+        event.path.reduce((result, key) => result.get(key), this).dispatchEvent({
+            type: event.type,
+            path: [],
+            value: event.value
+        });
     }
 
     /**
