@@ -7,6 +7,6 @@ let count = 0;
  * @return {string}
  */
 
-export function uuid() {
+export function createUuid() {
     return [randomInteger(2 ** 32), Date.now(), count++].map(number => number.toString(16)).join('-');
 }
