@@ -2,10 +2,10 @@ import RTree from 'rtree';
 import _ from 'lodash';
 
 /**
- * A searchable 2D space.
+ * A plane with values at coordinates.
  */
 
-export class Space {
+export class Plane {
     #rTree = new RTree();
 
     /**
