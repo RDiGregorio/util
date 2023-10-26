@@ -30,6 +30,16 @@ export class EntityContainer extends ObservableMap { //does this even need to be
         return this.get('id');
     }
 
+    /**
+     * Returns the `EntityContainer` with the given id.
+     * @param {string} id
+     * @return {EntityContainer}
+     */
+
+    static find(id) {
+        return EntityContainer.#entityContainers.get(id);
+    }
+
     update(entity) {
         // TODO: instead use this
     }
