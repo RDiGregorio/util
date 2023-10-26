@@ -17,12 +17,12 @@ export class Entity extends ObservableMap {
     }
 
     /**
-     * Returns the id of the `EntityContainer` that contains it.
+     * Returns the location id.
      * @return {string}
      */
 
-    get containerId() {
-        return this.get('location')?.get('containerId');
+    get locationId() {
+        return this.get('location')?.get('id');
     }
 
     /**
@@ -52,9 +52,9 @@ export class Entity extends ObservableMap {
         return this.get('location')?.get('y');
     }
 
-    setLocation(containerId, x, y) {
-        if (this.containerId === containerId && this.x === x && this.y === y) return;
-        this.set('location', new ObservableMap([['containerId', containerId], ['x', x], ['y', y]]));
+    setLocation(locationId, x, y) {
+        if (this.locationId === locationId && this.x === x && this.y === y) return;
+        this.set('location', new ObservableMap([['id', locationId], ['x', x], ['y', y]]));
         // todo: this is observable, meaning it can be decoupled from entity container
         //EntityContainer.find
 
