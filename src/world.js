@@ -20,7 +20,7 @@ export class World {
 
     /**
      * Returns each value and its coordinates.
-     * @return {Iterable<[any, any]>}
+     * @return {Iterable<[any,[number, number]]>}
      */
 
     * [Symbol.iterator]() {
@@ -41,6 +41,15 @@ export class World {
         this.#coordinates.set(value, [x, y]);
         this.#rTree.insert({x: x, y: y, w: 1, h: 1}, value);
         return this;
+    }
+
+    /**
+     * Deletes each value.
+     */
+
+    clear() {
+        this.#rTree = new RTree();
+        this.#coordinates = new MultiMap();
     }
 
     /**
@@ -66,6 +75,15 @@ export class World {
         }
 
         return result;
+    }
+
+    /**
+     * Returns each value and its coordinates.
+     * @return {Iterable<[any,[number, number]]>}
+     */
+
+    * entries() {
+        yield* this.#coordinates;
     }
 
     /**

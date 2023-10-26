@@ -37,6 +37,7 @@ describe('World', function () {
         world.add('a', 0, 1);
         world.add('b', 2, 3);
         expect([...world]).to.eql([['a', [0, 1]], ['b', [2, 3]]]);
+        expect([...world.entries()]).to.eql([['a', [0, 1]], ['b', [2, 3]]]);
         done();
     });
 });
