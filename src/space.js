@@ -9,7 +9,7 @@ export class Space {
     #rTree = new RTree();
 
     /**
-     * Adds `value` at the given coordinates.
+     * Adds `value` to the given coordinates.
      * @param {any} value
      * @param {number} x
      * @param {number} y

@@ -10,12 +10,12 @@ export class ObservableMap extends Map {
 
     /**
      * Creates a new `ObservableMap`.
-     * @param {Iterable<any>} [entries]
+     * @param {Iterable<any>} [entries = []]
      */
 
-    constructor(entries) {
+    constructor(entries = []) {
         super();
-        if (arguments.length === 1) [...entries].forEach(entry => this.set(...entry));
+        [...entries].forEach(entry => this.set(...entry));
     }
 
     /**
