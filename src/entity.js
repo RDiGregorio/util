@@ -1,9 +1,9 @@
 import {ObservableMap} from './observable-map.js';
 import {createUuid} from './uuid.js';
-import {World} from "./world.js";
+import {World} from './world.js';
 
 /**
- * An `ObservableMap` with a location in a `World`.
+ * An `ObservableMap` with an id and a location in a `World`.
  */
 
 export class Entity extends ObservableMap {
