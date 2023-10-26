@@ -2,10 +2,10 @@ import RTree from 'rtree';
 import {MultiMap} from './multi-map.js';
 
 /**
- * A plane with values at coordinates.
+ * A spatial plane with values at coordinates.
  */
 
-export class Plane {
+export class World {
     #rTree = new RTree();
     #coordinates = new MultiMap();
 
@@ -19,6 +19,7 @@ export class Plane {
     add(value, x, y) {
         if (!Number.isFinite(x)) throw new Error(`invalid x coordinate: ${x}`);
         if (!Number.isFinite(y)) throw new Error(`invalid y coordinate: ${y}`);
+        this.#coordinates.set(value, [x, y]);
         this.#rTree.insert({x: x, y: y, w: 1, h: 1}, value);
     }
 
@@ -31,12 +32,15 @@ export class Plane {
 
     delete(value, x, y) {
         if (arguments.length === 1) {
-            //TODO
+            [...this.#coordinates.get(value)].forEach(array => {
+                this.#coordinates.delete(value, array);
+                this.delete(value, array[0], array[1]);
+            });
+        } else {
+            if (!Number.isFinite(x)) throw new Error(`invalid x coordinate: ${x}`);
+            if (!Number.isFinite(y)) throw new Error(`invalid y coordinate: ${y}`);
+            this.#rTree.remove({x: x, y: y, w: 1, h: 1}, value);
         }
-
-        if (!Number.isFinite(x)) throw new Error(`invalid x coordinate: ${x}`);
-        if (!Number.isFinite(y)) throw new Error(`invalid y coordinate: ${y}`);
-        this.#rTree.remove({x: x, y: y, w: 1, h: 1}, value);
     }
 
     /**

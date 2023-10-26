@@ -1,6 +1,6 @@
 import {ObservableMap} from './observable-map.js';
 import {createUuid} from './uuid.js';
-import {Plane} from './plane.js';
+import {World} from './world.js';
 
 /**
  * A container for entities.
@@ -8,7 +8,7 @@ import {Plane} from './plane.js';
 
 export class EntityContainer extends ObservableMap { //does this even need to be observable?
     static #entityContainers = new Map(); //todo: might not even need this
-    #plane = new Plane();
+    world = new World();
 
     /**
      * Creates a new `EntityContainer`.
@@ -48,13 +48,13 @@ export class EntityContainer extends ObservableMap { //does this even need to be
         // can get the existing location before setting x, y
         // TODO
 
-        this.#plane.add(entity, x, y);
+        this.world.add(entity, x, y);
         entity.set('location', new ObservableMap([['containerId', this.id], ['x', x], ['y', y]]));
     }
 
     deleteEntity(entity) {
         // TODO
         entity.delete('location');
-        this.#plane.delete(entity, entity.x, entity.y);
+        this.world.delete(entity, entity.x, entity.y);
     }
 }
