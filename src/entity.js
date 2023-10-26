@@ -1,18 +1,38 @@
 import {ObservableMap} from './observable-map.js';
+import {EntityContainer} from './entity-container.js';
+import {createUuid} from './uuid.js';
 
 /**
- * An observable map with a location. The location is set by adding it to an `EntityContainer`.
+ * An observable map with a location.
  */
 
-class Entity extends ObservableMap {
+export class Entity extends ObservableMap {
 
     /**
-     * Returns the container id.
+     * Creates a new `Entity`.
+     * @param {string} [id]
+     */
+
+    constructor(id = createUuid()) {
+        super([['id', id]]);
+    }
+
+    /**
+     * Returns the id of the `EntityContainer` that contains it.
      * @return {string}
      */
 
     get containerId() {
         return this.get('location')?.get('containerId');
+    }
+
+    /**
+     * Returns the id.
+     * @return {string}
+     */
+
+    get id() {
+        return this.get('id');
     }
 
     /**
@@ -31,5 +51,13 @@ class Entity extends ObservableMap {
 
     get y() {
         return this.get('location')?.get('y');
+    }
+
+    setLocation(containerId, x, y) {
+        if (this.containerId === containerId && this.x === x && this.y === y) return;
+        this.set('location', new ObservableMap([['containerId', containerId], ['x', x], ['y', y]]));
+        // I don't really like using a factory constructor... use a find function?
+        const entityContainer = new EntityContainer(containerId);
+        // entityContainer
     }
 }
