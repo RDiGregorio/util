@@ -1,5 +1,5 @@
 import RTree from 'rtree';
-import _ from 'lodash';
+import {MultiMap} from './multi-map.js';
 
 /**
  * A plane with values at coordinates.
@@ -7,6 +7,7 @@ import _ from 'lodash';
 
 export class Plane {
     #rTree = new RTree();
+    #coordinates = new MultiMap();
 
     /**
      * Adds `value` to the given coordinates.
@@ -16,21 +17,25 @@ export class Plane {
      */
 
     add(value, x, y) {
-        if (!_.isFinite(x)) throw new Error(`invalid x coordinate: ${x}`);
-        if (!_.isFinite(y)) throw new Error(`invalid y coordinate: ${y}`);
+        if (!Number.isFinite(x)) throw new Error(`invalid x coordinate: ${x}`);
+        if (!Number.isFinite(y)) throw new Error(`invalid y coordinate: ${y}`);
         this.#rTree.insert({x: x, y: y, w: 1, h: 1}, value);
     }
 
     /**
-     * Deletes `value` from the given coordinates.
+     * Deletes `value` from the given coordinates. If only `value` is given, it is deleted from all coordinates.
      * @param {any} value
-     * @param {number} x
-     * @param {number} y
+     * @param {number} [x]
+     * @param {number} [y]
      */
 
     delete(value, x, y) {
-        if (!_.isFinite(x)) throw new Error(`invalid x coordinate: ${x}`);
-        if (!_.isFinite(y)) throw new Error(`invalid y coordinate: ${y}`);
+        if (arguments.length === 1) {
+            //TODO
+        }
+
+        if (!Number.isFinite(x)) throw new Error(`invalid x coordinate: ${x}`);
+        if (!Number.isFinite(y)) throw new Error(`invalid y coordinate: ${y}`);
         this.#rTree.remove({x: x, y: y, w: 1, h: 1}, value);
     }
 
@@ -44,10 +49,10 @@ export class Plane {
      */
 
     search(x, y, width, height) {
-        if (!_.isFinite(x)) throw new Error(`invalid x coordinate: ${x}`);
-        if (!_.isFinite(y)) throw new Error(`invalid y coordinate: ${y}`);
-        if (!_.isFinite(width) || width < 0) throw new Error(`invalid width: ${width}`);
-        if (!_.isFinite(height) || height < 0) throw new Error(`invalid height: ${height}`);
+        if (!Number.isFinite(x)) throw new Error(`invalid x coordinate: ${x}`);
+        if (!Number.isFinite(y)) throw new Error(`invalid y coordinate: ${y}`);
+        if (!Number.isFinite(width) || width < 0) throw new Error(`invalid width: ${width}`);
+        if (!Number.isFinite(height) || height < 0) throw new Error(`invalid height: ${height}`);
         return this.#rTree.search({x: x, y: y, w: width + 1, h: height + 1});
     }
 }

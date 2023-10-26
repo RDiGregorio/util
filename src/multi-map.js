@@ -26,7 +26,8 @@ export class MultiMap {
     }
 
     /**
-     * Deletes an entry. Returns true if the entry existed.
+     * Deletes an entry. If only `key` is given, then all entries with that key are deleted. Returns true if an entry
+     * with that key existed.
      * @param {any} key
      * @param {any} [value]
      * @return {boolean}

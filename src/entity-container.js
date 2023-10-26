@@ -7,7 +7,7 @@ import {Plane} from './plane.js';
  */
 
 export class EntityContainer extends ObservableMap { //does this even need to be observable?
-    static #entityContainers = new Map();
+    static #entityContainers = new Map(); //todo: might not even need this
     #plane = new Plane();
 
     /**

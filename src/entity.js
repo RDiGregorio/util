@@ -17,21 +17,21 @@ export class Entity extends ObservableMap {
     }
 
     /**
-     * Returns the location id.
-     * @return {string}
-     */
-
-    get locationId() {
-        return this.get('location')?.get('id');
-    }
-
-    /**
      * Returns the id.
      * @return {string}
      */
 
     get id() {
         return this.get('id');
+    }
+
+    /**
+     * Returns the location id.
+     * @return {string}
+     */
+
+    get locationId() {
+        return this.get('location')?.get('id');
     }
 
     /**
@@ -56,10 +56,5 @@ export class Entity extends ObservableMap {
         if (this.locationId === locationId && this.x === x && this.y === y) return;
         this.set('location', new ObservableMap([['id', locationId], ['x', x], ['y', y]]));
         // todo: this is observable, meaning it can be decoupled from entity container
-        //EntityContainer.find
-
-        // I don't really like using a factory constructor... use a find function?
-        // const entityContainer = new EntityContainer(containerId);
-        // entityContainer
     }
 }

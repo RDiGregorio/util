@@ -7,7 +7,7 @@ import _ from 'lodash';
  */
 
 export function isJsonPrimitive(value) {
-    return _.isNull(value) || _.isBoolean(value) || _.isFinite(value) || _.isString(value);
+    return value === null || _.isBoolean(value) || Number.isFinite(value) || _.isString(value);
 }
 
 /**
