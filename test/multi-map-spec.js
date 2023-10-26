@@ -36,4 +36,13 @@ describe('MultiMap', function () {
         expect(multiMap.size).to.equal(3);
         done();
     });
+
+    it('it is iterable', function (done) {
+        const multiMap = new MultiMap();
+        multiMap.set('a', 0);
+        multiMap.set('b', 1);
+        expect([...multiMap.entries()]).to.eql([['a', 0], ['b', 1]]);
+        expect([...multiMap]).to.eql([['a', 0], ['b', 1]]);
+        done();
+    });
 });

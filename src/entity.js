@@ -1,11 +1,14 @@
+import _ from 'lodash';
 import {ObservableMap} from './observable-map.js';
 import {createUuid} from './uuid.js';
+import {World} from "./world.js";
 
 /**
  * An observable map with a location.
  */
 
 export class Entity extends ObservableMap {
+    static #worlds = new Map();
 
     /**
      * Creates a new `Entity`.
@@ -14,6 +17,12 @@ export class Entity extends ObservableMap {
 
     constructor(id = createUuid()) {
         super([['id', id]]);
+    }
+
+    get #world() {
+        if (!this.has('location')) return undefined;
+        if (!Entity.#worlds.has(this.worldId)) Entity.#worlds.set(this.worldId, new World());
+        return Entity.#worlds.get(this.worldId);
     }
 
     /**
@@ -53,7 +62,16 @@ export class Entity extends ObservableMap {
     }
 
     setLocation(worldId, x, y) {
-        if (this.worldId === worldId && this.x === x && this.y === y) return;
+        // I need to handle the case where the entity is loaded from disk
+
+        if (!this.has('location') || this.worldId !== worldId) {
+            //
+        }
+
+        // if (!_.isString(worldId)) throw new Error(`invalid world id: ${worldId}`);
+
+
+        // if (this.worldId === worldId && this.x === x && this.y === y) return;
         this.set('location', new ObservableMap([['id', worldId], ['x', x], ['y', y]]));
     }
 

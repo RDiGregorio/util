@@ -19,10 +19,20 @@ export class World {
     }
 
     /**
+     * Returns each value and its coordinates.
+     * @return {Iterable<[any, any]>}
+     */
+
+    * [Symbol.iterator]() {
+        yield* this.#coordinates;
+    }
+
+    /**
      * Adds `value` to the given coordinates.
      * @param {any} value
      * @param {number} x
      * @param {number} y
+     * @return {World}
      */
 
     add(value, x, y) {
@@ -30,6 +40,7 @@ export class World {
         if (!Number.isFinite(y)) throw new Error(`invalid y coordinate: ${y}`);
         this.#coordinates.set(value, [x, y]);
         this.#rTree.insert({x: x, y: y, w: 1, h: 1}, value);
+        return this;
     }
 
     /**
@@ -37,9 +48,12 @@ export class World {
      * @param {any} value
      * @param {number} [x]
      * @param {number} [y]
+     * @return {boolean}
      */
 
     delete(value, x, y) {
+        const result = this.#coordinates.has(value);
+
         if (arguments.length === 1) {
             [...this.#coordinates.get(value)].forEach(array => {
                 this.#coordinates.delete(value, array);
@@ -50,6 +64,17 @@ export class World {
             if (!Number.isFinite(y)) throw new Error(`invalid y coordinate: ${y}`);
             this.#rTree.remove({x: x, y: y, w: 1, h: 1}, value);
         }
+
+        return result;
+    }
+
+    /**
+     * Returns true if the `World` contains `value`.
+     * @param value
+     */
+
+    has(value) {
+        return this.#coordinates.has(value);
     }
 
     /**

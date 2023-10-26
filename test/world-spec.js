@@ -31,4 +31,12 @@ describe('World', function () {
         expect(world.size).to.equal(1);
         done();
     });
+
+    it('it is iterable', function (done) {
+        const world = new World();
+        world.add('a', 0, 1);
+        world.add('b', 2, 3);
+        expect([...world]).to.eql([['a', [0, 1]], ['b', [2, 3]]]);
+        done();
+    });
 });
