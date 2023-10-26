@@ -18,4 +18,16 @@ describe('ObservableMap', function () {
         expect(result).to.eql(['b', [], 1]);
         done();
     });
+
+    it('can sync with others', function (done) {
+        const observableMaps = [new ObservableMap(), new ObservableMap()];
+        observableMaps[0].addEventListener(observableMaps[1].sync);
+
+        observableMaps[1].addEventListener((type, path, value) => {
+            console.log(value);
+        });
+
+        observableMaps[0].set('a', new ObservableMap([['b', 0]]));
+        done();
+    });
 });

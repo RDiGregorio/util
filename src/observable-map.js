@@ -86,34 +86,31 @@ export class ObservableMap extends Map {
     }
 
     /**
-     * Triggers an event to be dispatched, propagating from `path`, by deleting or updating entries for "delete" or
-     * "update" events.
-     * @param {{type: string, path: any[], value: any}} event
+     * Synchronizes with another `ObservableMap` using events.
+     * @param {string} type
+     * @param {any[]} path
+     * @param {any} value
      */
 
-    triggerEvent(event) {
-        // TODO: this really should be moved; it doesn't make sense here as it's use is too narrow
-
-        if (event.type === 'delete') {
-            if (event.path.length === 0) throw new Error('missing key for delete event');
-            const path = [...event.path], key = path.pop(), map = path.reduce((result, key) => result.get(key), this);
-            if (!map.has(key)) throw new Error('failed to trigger delete event');
+    sync(type, path, value) {
+        if (type === 'delete') {
+            if (path.length === 0) throw new Error('missing key for delete event');
+            path = [...path];
+            const key = path.pop(), map = path.reduce((result, key) => result.get(key), this);
+            if (!map.has(key)) throw new Error('failed to sync delete event');
             map.delete(key);
             return;
         }
 
-        if (event.type === 'update') {
-            if (event.path.length === 0) throw new Error('missing key for update event');
-            const path = [...event.path], key = path.pop(), map = path.reduce((result, key) => result.get(key), this);
-            if (map.has(key) && map.get(key) === event.value) throw new Error('failed to trigger update event');
-            map.set(key, event.value);
+        if (type === 'update') {
+            if (path.length === 0) throw new Error('missing key for update event');
+            path = [...path];
+            const key = path.pop(), map = path.reduce((result, key) => result.get(key), this);
+            if (map.has(key) && map.get(key) === value) throw new Error('failed to sync update event');
+            map.set(key, value);
             return;
         }
 
-        event.path.reduce((result, key) => result.get(key), this).dispatchEvent({
-            type: event.type,
-            path: [],
-            value: event.value
-        });
+        path.reduce((result, key) => result.get(key), this).dispatchEvent(type, value);
     }
 }
