@@ -1,10 +1,9 @@
-import _ from 'lodash';
 import {ObservableMap} from './observable-map.js';
 import {createUuid} from './uuid.js';
 import {World} from "./world.js";
 
 /**
- * An observable map with a location.
+ * An `ObservableMap` with a location in a `World`.
  */
 
 export class Entity extends ObservableMap {
@@ -17,12 +16,6 @@ export class Entity extends ObservableMap {
 
     constructor(id = createUuid()) {
         super([['id', id]]);
-    }
-
-    get #world() {
-        if (!this.has('location')) return undefined;
-        if (!Entity.#worlds.has(this.worldId)) Entity.#worlds.set(this.worldId, new World());
-        return Entity.#worlds.get(this.worldId);
     }
 
     /**
@@ -61,26 +54,23 @@ export class Entity extends ObservableMap {
         return this.get('location')?.get('y');
     }
 
-    setLocation(worldId, x, y) {
-        // I need to handle the case where the entity is loaded from disk
-
-        if (!this.has('location') || this.worldId !== worldId) {
-            //
-        }
-
-        // if (!_.isString(worldId)) throw new Error(`invalid world id: ${worldId}`);
-
-
-        // if (this.worldId === worldId && this.x === x && this.y === y) return;
-        this.set('location', new ObservableMap([['id', worldId], ['x', x], ['y', y]]));
+    static #getWorld(id) {
+        if (!Entity.#worlds.has(id)) Entity.#worlds.set(id, new World());
+        return Entity.#worlds.get(id);
     }
 
-    sync(world) {
+    #syncWorld(world) {
         const cancel = this.addEventListener((type, path) => {
             if (path[0] === 'location') {
                 world.delete(this);
                 this.worldId === world.id ? world.add(this, this.x, this.y) : cancel();
             }
         });
+    }
+
+    setLocation(worldId, x, y) {
+        const world = Entity.#getWorld(worldId);
+        if (!world.has(this)) this.#syncWorld(world);
+        this.set('location', new ObservableMap([['id', worldId], ['x', x], ['y', y]]));
     }
 }
