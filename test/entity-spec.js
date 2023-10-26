@@ -15,6 +15,10 @@ describe('Entity', function () {
         expect(result.includes(entities[1])).to.equal(true);
         expect(result.includes(entities[2])).to.equal(false);
         expect(result.includes(entities[3])).to.equal(false);
+        entities[1].deleteLocation();
+        expect(entities[0].search(1)).to.eql([entities[0]]);
+        entities[0].deleteLocation();
+        expect(entities[0].search(1)).to.equal(undefined);
         done();
     });
 });

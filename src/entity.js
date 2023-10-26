@@ -63,9 +63,17 @@ export class Entity extends ObservableMap {
         const world = Entity.#getWorld(worldId), cancel = this.addEventListener((type, path) => {
             if (path[0] === 'location') {
                 world.delete(this);
-                this.worldId === worldId ? world.add(this, this.x, this.y) : cancel();
+                this.has('location') && this.worldId === worldId ? world.add(this, this.x, this.y) : cancel();
             }
         });
+    }
+
+    /**
+     * Deletes the location of the `Entity`.
+     */
+
+    deleteLocation() {
+        this.delete('location');
     }
 
     /**
@@ -87,6 +95,8 @@ export class Entity extends ObservableMap {
      */
 
     search(radius) {
+        if (!Number.isFinite(radius) || radius < 0) throw new Error(`invalid radius: ${radius}`);
+        if (!this.has('location')) return undefined;
         return Entity.#getWorld(this.worldId).search(this.x - radius, this.y - radius, radius * 2, radius * 2);
     }
 }
