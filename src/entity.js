@@ -3,7 +3,7 @@ import {createUuid} from './uuid.js';
 import {World} from './world.js';
 
 /**
- * An `ObservableMap` with an id and a location in a `World`.
+ * An `ObservableMap` with an id and a location. It can search for nearby objects.
  */
 
 export class Entity extends ObservableMap {
@@ -72,5 +72,9 @@ export class Entity extends ObservableMap {
         const world = Entity.#getWorld(worldId);
         if (!world.has(this)) this.#syncWorld(world);
         this.set('location', new ObservableMap([['id', worldId], ['x', x], ['y', y]]));
+    }
+
+    search(radius) {
+        // TODO
     }
 }
