@@ -55,7 +55,7 @@ export class MultiMap {
 
     /**
      * Calls `callback` with each entry.
-     * @param {function(any, any, MultiMap)} callback
+     * @param {function(value: any, key: any, self: MultiMap)} callback
      * @param {any} [self = this]
      */
 

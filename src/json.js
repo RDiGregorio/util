@@ -24,7 +24,7 @@ export function mapReplacer(key, value) {
 /**
  * A reviver for `JSON.parse` that can decode `Map` objects.
  * @param {Class[]} types
- * @return {function(number|string, any): any}
+ * @return {function(key: number|string, value: any): any}
  */
 
 export function createMapReviver(types) {

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {ObservableMap} from './observable-map.js';
 import {createUuid} from './uuid.js';
 
@@ -56,5 +57,13 @@ export class Entity extends ObservableMap {
         if (this.locationId === locationId && this.x === x && this.y === y) return;
         this.set('location', new ObservableMap([['id', locationId], ['x', x], ['y', y]]));
         // todo: this is observable, meaning it can be decoupled from entity container
+    }
+
+    sync(world) {
+        const cancel = this.addEventListener((type, path, value) => {
+            if (_.isEqual(path, ['location'])) {
+                // TODO
+            }
+        });
     }
 }

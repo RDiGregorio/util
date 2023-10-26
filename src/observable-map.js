@@ -19,7 +19,7 @@ export class ObservableMap extends Map {
     }
 
     #dispatchEvent(event) {
-        this.#eventListeners.forEach(callback => callback(event));
+        this.#eventListeners.forEach(callback => callback(event.type, event.path, event.value));
 
         for (const [parent, key] of this.#parentKeys)
             parent.#dispatchEvent({type: event.type, path: [key, ...event.path], value: event.value});
@@ -27,7 +27,7 @@ export class ObservableMap extends Map {
 
     /**
      * Adds an event listener. Returns a function that removes the event listener.
-     * @param {function({type: string, path: any[], value: any}): void} callback
+     * @param {function(type: string, path: any[], value: any): void} callback
      * @return {function(): void}
      */
 
