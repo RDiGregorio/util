@@ -18,6 +18,13 @@ export class ObservableMap extends Map {
         [...entries].forEach(entry => this.set(...entry));
     }
 
+    #dispatchEvent(event) {
+        this.#eventListeners.forEach(callback => callback(event));
+
+        for (const [parent, key] of this.#parentKeys)
+            parent.#dispatchEvent({type: event.type, path: [key, ...event.path], value: event.value});
+    }
+
     /**
      * Adds an event listener. Returns a function that removes the event listener.
      * @param {function({type: string, path: any[], value: any}): void} callback
@@ -27,10 +34,7 @@ export class ObservableMap extends Map {
     addEventListener(callback) {
         const key = {};
         this.#eventListeners.set(key, callback);
-
-        return () => {
-            this.#eventListeners.delete(key);
-        };
+        return () => this.#eventListeners.delete(key);
     }
 
     /**
@@ -51,20 +55,18 @@ export class ObservableMap extends Map {
         if (!this.has(key)) return false;
         if (this.get(key) instanceof ObservableMap) this.get(key).#parentKeys.delete(this, key);
         super.delete(key);
-        this.dispatchEvent({type: 'delete', path: [key], value: undefined});
+        this.#dispatchEvent({type: 'delete', path: [key], value: undefined});
         return true;
     }
 
     /**
      * Dispatches an event to each event listener. Events propagate to each parent `ObservableMap`.
-     * @param {{type: string, path: any[], value: any}} event
+     * @param {string} type
+     * @param {any} [value]
      */
 
-    dispatchEvent(event) {
-        this.#eventListeners.forEach(callback => callback(event));
-
-        for (const [parent, key] of this.#parentKeys)
-            parent.dispatchEvent({type: event.type, path: [key, ...event.path], value: event.value});
+    dispatchEvent(type, value) {
+        this.#dispatchEvent({type: type, path: [], value: value});
     }
 
     /**
@@ -79,7 +81,7 @@ export class ObservableMap extends Map {
         if (this.get(key) instanceof ObservableMap) this.get(key).#parentKeys.delete(this, key);
         super.set(key, value);
         if (value instanceof ObservableMap) value.#parentKeys.set(this, key);
-        this.dispatchEvent({type: 'update', path: [key], value: value});
+        this.#dispatchEvent({type: 'update', path: [key], value: value});
         return this;
     }
 
@@ -90,6 +92,8 @@ export class ObservableMap extends Map {
      */
 
     triggerEvent(event) {
+        // TODO: this really should be moved; it doesn't make sense here as it's use is too narrow
+
         if (event.type === 'delete') {
             if (event.path.length === 0) throw new Error('missing key for delete event');
             const path = [...event.path], key = path.pop(), map = path.reduce((result, key) => result.get(key), this);
