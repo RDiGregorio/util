@@ -12,7 +12,7 @@ export function isJsonPrimitive(value) {
 
 /**
  * A replacer for `JSON.stringify` that can encode `Map` objects.
- * @param {any} key
+ * @param {number|string} key
  * @param {any} value
  * @return {any}
  */
@@ -24,7 +24,7 @@ export function mapReplacer(key, value) {
 /**
  * A reviver for `JSON.parse` that can decode `Map` objects.
  * @param {Class[]} types
- * @return {function(any, any): any}
+ * @return {function(number|string, any): any}
  */
 
 export function createMapReviver(types) {
