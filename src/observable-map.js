@@ -84,33 +84,4 @@ export class ObservableMap extends Map {
         this.#dispatchEvent({type: 'update', path: [key], value: value});
         return this;
     }
-
-    /**
-     * Synchronizes with another `ObservableMap` using events.
-     * @param {string} type
-     * @param {any[]} path
-     * @param {any} value
-     */
-
-    sync(type, path, value) {
-        if (type === 'delete') {
-            if (path.length === 0) throw new Error('missing key for delete event');
-            path = [...path];
-            const key = path.pop(), map = path.reduce((result, key) => result.get(key), this);
-            if (!map.has(key)) throw new Error('failed to sync delete event');
-            map.delete(key);
-            return;
-        }
-
-        if (type === 'update') {
-            if (path.length === 0) throw new Error('missing key for update event');
-            path = [...path];
-            const key = path.pop(), map = path.reduce((result, key) => result.get(key), this);
-            if (map.has(key) && map.get(key) === value) throw new Error('failed to sync update event');
-            map.set(key, value);
-            return;
-        }
-
-        path.reduce((result, key) => result.get(key), this).dispatchEvent(type, value);
-    }
 }

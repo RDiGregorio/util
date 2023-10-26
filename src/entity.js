@@ -3,7 +3,7 @@ import {createUuid} from './uuid.js';
 import {World} from './world.js';
 
 /**
- * An observable object with an id and a location. It can search for nearby objects.
+ * An `ObservableMap` with an id and a location. It can search each `Entity` within a given radius.
  */
 
 export class Entity extends ObservableMap {
