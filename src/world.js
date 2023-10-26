@@ -10,6 +10,15 @@ export class World {
     #coordinates = new MultiMap();
 
     /**
+     * Returns the number of values at coordinates.
+     * @return {number}
+     */
+
+    get size() {
+        return this.#coordinates.size;
+    }
+
+    /**
      * Adds `value` to the given coordinates.
      * @param {any} value
      * @param {number} x
