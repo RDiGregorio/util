@@ -96,7 +96,7 @@ export class Entity extends ObservableMap {
 
     search(radius) {
         if (!Number.isFinite(radius) || radius < 0) throw new Error(`invalid radius: ${radius}`);
-        if (!this.has('location')) return undefined;
+        if (!this.has('location')) return [];
         return Entity.#getWorld(this.worldId).search(this.x - radius, this.y - radius, radius * 2, radius * 2);
     }
 }
