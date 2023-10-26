@@ -1,5 +1,6 @@
 import {expect} from 'chai';
 import {ObservableMap} from '../src/observable-map.js';
+import {createMapReviver, mapReplacer} from "../src/json.js";
 
 describe('ObservableMap', function () {
     it('can listen for events', function (done) {
@@ -21,13 +22,20 @@ describe('ObservableMap', function () {
 
     it('can sync with others', function (done) {
         const observableMaps = [new ObservableMap(), new ObservableMap()];
-        observableMaps[0].addEventListener(observableMaps[1].sync);
 
-        observableMaps[1].addEventListener((type, path, value) => {
-            console.log(value);
-        });
+        function copy(value) {
+            return JSON.parse(JSON.stringify(value, mapReplacer), createMapReviver([ObservableMap]));
+        }
+
+        observableMaps[0].addEventListener((type, path, value) =>
+            observableMaps[1].sync(type, path, copy(value))
+        );
 
         observableMaps[0].set('a', new ObservableMap([['b', 0]]));
+        expect(observableMaps[1].get('a').get('b')).to.equal(0);
+        let result;
+        observableMaps[1].addEventListener((type, path, value) => result = [type, path, value]);
+        observableMaps[0].get('a').dispatchEvent('c', 1);
         done();
     });
 });
