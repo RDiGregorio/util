@@ -59,11 +59,11 @@ export class Entity extends ObservableMap {
         return Entity.#worlds.get(id);
     }
 
-    #syncWorld(world) {
-        const cancel = this.addEventListener((type, path) => {
+    #syncWorld(worldId) {
+        const world = Entity.#getWorld(worldId), cancel = this.addEventListener((type, path) => {
             if (path[0] === 'location') {
                 world.delete(this);
-                this.worldId === world.id ? world.add(this, this.x, this.y) : cancel();
+                this.worldId === worldId ? world.add(this, this.x, this.y) : cancel();
             }
         });
     }
@@ -76,18 +76,17 @@ export class Entity extends ObservableMap {
      */
 
     setLocation(worldId, x, y) {
-        const world = Entity.#getWorld(worldId);
-        if (!world.has(this)) this.#syncWorld(world);
+        if (!Entity.#getWorld(worldId).has(this)) this.#syncWorld(worldId);
         this.set('location', new ObservableMap([['id', worldId], ['x', x], ['y', y]]));
     }
 
     /**
      * Returns each `Entity` in the same world within the given radius.
      * @param {number} radius
-     * @return {Entity}
+     * @return {Entity[]}
      */
 
     search(radius) {
-        return Entity.#getWorld(this.worldId).search(-radius, -radius, radius * 2, radius * 2);
+        return Entity.#getWorld(this.worldId).search(this.x - radius, this.y - radius, radius * 2, radius * 2);
     }
 }
