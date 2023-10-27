@@ -1,4 +1,5 @@
 import WebSocket from 'ws';
+import {createPromise} from './promise.js';
 
 class Client {
     #callbacks = new Map();
@@ -21,9 +22,9 @@ class Client {
         return this.#model;
     }
 
-    call(key, values) {
-        const count = this.#id++, promise = new Promise(resolve => this.#callbacks.set(count, resolve));
-        this.#socket.send(JSON.stringify([count, key, values]));
+    call(key, values) { // todo: reject after a timeout?
+        const id = this.#id++, promise = new Promise(resolve => this.#callbacks.set(id, resolve));
+        this.#socket.send(JSON.stringify([id, key, values]));
         return promise;
     }
 
@@ -32,8 +33,11 @@ class Client {
     }
 
     connect(host = 'localhost', port = 8080) {
+        const [promise, resolve] = createPromise();
         this.#socket = new WebSocket(`ws://${host}:${port}`);
         this.#socket.on('error', this.#onError);
+        this.#socket.on('open', () => resolve());
+        this.#socket.on('close', () => resolve());
 
         this.#socket.on('message', message => {
             try {
@@ -44,15 +48,14 @@ class Client {
                     this.#callbacks.delete(path);
                     callback(value);
                 }
+
+                // todo: handle model messages
             } catch (error) {
                 this.#onError(error);
             }
         });
 
-        return new Promise(resolve => {
-            this.#socket.on('open', () => resolve(this.#socket.readyState));
-            this.#socket.on('close', () => resolve(this.#socket.readyState));
-        });
+        return promise;
     }
 }
 
