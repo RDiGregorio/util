@@ -1,15 +1,58 @@
 import {WebSocketServer} from 'ws';
-import {mapReplacer} from './json.js';
+import {createMapReviver, mapReplacer} from './json.js';
 import {ObservableMap} from './observable-map.js';
+import {createPromise} from './promise.js';
 
 class Server {
-    constructor(model, controller, types, onError = console.error) {
+    #onConnect;
+    #onError = console.error;
+    #onMessage;
+    #server;
+
+    connect(port = 8080) {
+        const [promise, resolve] = createPromise();
+        this.#server = new WebSocketServer({port: port});
+        this.#server.on('error', this.#onError);
+        this.#server.on('wsClientError', this.#onError);
+        this.#server.on('listening', () => resolve());
+        this.#server.on('close', () => resolve());
+
+        this.#server.on('connection', (socket, request) => {
+            socket.on('error', this.#onError);
+
+            function send(message) {
+                console.debug(`sending: ${message}`);
+                socket.send(message);
+            }
+
+            try {
+                const state = this.#onConnect(request, send);
+                socket.on('message', message => this.#onMessage(state, send, `${message}`));
+            } catch (error) {
+                this.#onError(error);
+            }
+        });
+
+        return promise;
     }
 
-    connect() {
+    close() {
+        this.#server.close();
+    }
 
+    onConnect(callback) {
+        this.#onConnect = callback;
+    }
+
+    onError(callback) {
+        this.#onError = callback;
+    }
+
+    onMessage(callback) {
+        this.#onMessage = callback;
     }
 }
+
 
 /**
  * Creates a new server. Returns a function to close the server.
@@ -48,4 +91,7 @@ function createServer(model, controller, onError = console.error) {
     return () => server.close();
 }
 
-createServer(new ObservableMap(), {f: x => x + 1});
+//createServer(new ObservableMap(), {f: x => x + 1});
+
+const server = new Server();
+server.connect();

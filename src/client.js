@@ -7,7 +7,7 @@ class Client {
     #id = 0;
     #model;
     #onError;
-    #reviver;
+    #mapReviver;
     #socket;
 
     /**
@@ -19,7 +19,7 @@ class Client {
 
     constructor(model, types, onError = console.error) {
         this.#model = model;
-        this.#reviver = createMapReviver(types);
+        this.#mapReviver = createMapReviver(types);
         this.#onError = onError
     }
 
@@ -41,12 +41,13 @@ class Client {
     connect(host = 'localhost', port = 8080) {
         const [promise, resolve] = createPromise();
         this.#socket = new WebSocket(`ws://${host}:${port}`);
+        this.#socket.on('error', this.#onError);
         this.#socket.on('open', () => resolve());
         this.#socket.on('close', () => resolve());
 
         this.#socket.on('message', message => {
             try {
-                const [type, path, value] = JSON.parse(message, this.#reviver);
+                const [type, path, value] = JSON.parse(message, this.#mapReviver);
 
                 if (type === 'response') {
                     const callback = this.#callbacks.get(path);
