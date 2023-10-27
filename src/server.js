@@ -1,4 +1,15 @@
 import {WebSocketServer} from 'ws';
+import {mapReplacer} from './json.js';
+import {ObservableMap} from './observable-map.js';
+
+class Server {
+    constructor(model, controller, types, onError = console.error) {
+    }
+
+    connect() {
+
+    }
+}
 
 /**
  * Creates a new server. Returns a function to close the server.
@@ -10,22 +21,31 @@ import {WebSocketServer} from 'ws';
 
 function createServer(model, controller, onError = console.error) {
     const server = new WebSocketServer({port: 8080});
+    server.on('error', onError);
 
     server.on('connection', (socket) => {
+        function send(value) {
+            const message = JSON.stringify(value, mapReplacer);
+            console.debug(`sending message: ${message}`);
+            socket.send(message);
+        }
+
         socket.on('error', onError);
 
         socket.on('message', message => {
-            console.log("@@@@@@@@@@@@@@")
-            console.log(JSON.parse(message));
-
-            const [id, key, values] = JSON.parse(message);
-            socket.send(JSON.stringify(['response', id, controller[key](...values)]));
+            try {
+                console.debug(`received message: ${message}`);
+                const [id, key, values] = JSON.parse(message); //todo: use reviver
+                send(['response', id, controller[key](...values)]);
+            } catch (error) {
+                onError(error);
+            }
         });
 
-        // todo: model.addEventListener()
+        model.addEventListener((type, path, value) => send([type, path, value]));
     });
 
     return () => server.close();
 }
 
-createServer(null, {f: x => x + 1});
+createServer(new ObservableMap(), {f: x => x + 1});
