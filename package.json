@@ -7,7 +7,8 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "rtree": "^1.4.2"
+    "rtree": "^1.4.2",
+    "ws": "^8.14.2"
   },
   "devDependencies": {
     "chai": "^4.3.10",
