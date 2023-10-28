@@ -9,18 +9,14 @@ describe('MessageServer', function () {
             messageServer = new MessageServer(createServer()),
             messageClient = new MessageClient('localhost', 8080);
 
-        messageServer.onMessage((message, state) => {
-            console.log(message);
+        messageServer.listen(8080, socket => socket);
+        messageServer.onMessage((socket, message) => socket.send(message));
+
+        messageClient.onMessage(message => {
+            expect(message).to.equal('hello');
             done();
         });
 
-        messageServer.listen(8080);
         messageClient.send('hello');
-        messageClient.send('world');
-
-       // messageClient.onOpen(() => messageClient.send('hello'));
-
-        // TODO
-//        done();
     });
 });

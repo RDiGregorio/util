@@ -55,7 +55,7 @@ export class MessageClient {
      */
 
     onMessage(callback) {
-        this.#socket.on('message', message => callback(message));
+        this.#socket.on('message', message => callback(`${message}`));
     }
 
     /**

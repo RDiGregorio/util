@@ -9,10 +9,8 @@ export class MessageServer {
     #onClose;
     #onError;
     #onMessage;
-    #onConnection;
     #server;
     #webSocketServer;
-    #close;
 
     /**
      * Creates a new `MessageServer` from an HTTP or HTTPS server.
@@ -33,12 +31,13 @@ export class MessageServer {
     }
 
     /**
-     * Listens for new connections.
+     * Listens for new connections. The value returned by `callback` is passed to "close" and "message" event handlers.
      * @param {number} port
+     * @param {function(socket: any, request: any): any} callback
      * @return {Promise}
      */
 
-    listen(port) {
+    listen(port, callback) {
         function rethrow(error) {
             throw error;
         }
@@ -46,26 +45,22 @@ export class MessageServer {
         function ignore() {
         }
 
-        const [promise, resolve] = createPromise();
         this.#webSocketServer.on('error', error => (this.#onError ?? rethrow)(error));
         this.#webSocketServer.on('wsClientError', error => (this.#onError ?? rethrow)(error));
-        this.#webSocketServer.on('listening', () => resolve());
-        this.#webSocketServer.on('close', () => resolve());
 
         this.#webSocketServer.on('connection', (socket, request) => {
             socket.on('error', error => (this.#onError ?? rethrow)(error));
 
             try {
-                const state = (this.#onConnection ?? ignore)(socket, request);
+                const state = callback(socket, request);
                 socket.on('close', () => (this.#onClose ?? ignore)(state));
-                socket.on('message', message => (this.#onMessage ?? ignore)(message, state));
+                socket.on('message', message => (this.#onMessage ?? ignore)(state, `${message}`));
             } catch (error) {
                 (this.#onError ?? rethrow)(error);
             }
         });
 
         this.#server.listen(port);
-        return promise;
     }
 
     /**
@@ -75,16 +70,6 @@ export class MessageServer {
 
     onClose(callback) {
         this.#onClose = callback;
-    }
-
-    /**
-     * Handles "connection" events. Returns the state object used by "close" and "message" event handlers.
-     * @param callback
-     * @return {any}
-     */
-
-    onConnection(callback) {
-        this.#onConnection = callback
     }
 
     /**
@@ -98,7 +83,7 @@ export class MessageServer {
 
     /**
      * Handles "message" events from connections.
-     * @param {function(message: any, state: any): void} callback
+     * @param {function(state: any, message: any): void} callback
      */
 
     onMessage(callback) {
