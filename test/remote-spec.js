@@ -1,8 +1,8 @@
 import {expect} from 'chai';
+import {createServer} from 'http';
 import {Remote} from '../src/remote.js';
 import {MessageClient} from '../src/message-client.js';
 import {MessageServer} from '../src/message-server.js';
-import {createServer} from "http";
 
 describe('remote', function () {
     it('can call remote functions', function (done) {
