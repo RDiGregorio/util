@@ -4,7 +4,7 @@ import WebSocket from 'ws';
  * A client that can send and receive messages.
  */
 
-class Client {
+class MessageClient {
     #socket;
 
     /**
