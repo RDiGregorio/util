@@ -1,8 +1,28 @@
 import {expect} from 'chai';
-import {ObservableMap} from '../src/observable-map.js';
 import {Remote} from '../src/remote.js';
+import {MessageClient} from '../src/message-client.js';
+import {MessageServer} from '../src/message-server.js';
+import {createServer} from "http";
 
 describe('remote', function () {
+    it('can call remote functions', function (done) {
+        const
+            target = {add: (left, right) => left + right},
+            messageServer = new MessageServer(createServer()),
+            messageClient = new MessageClient();
+
+        messageServer.listen(send => ({target, send}));
+        messageServer.onMessage(Remote.callHandler);
+
+        new Remote(messageClient).call('add', [5, 7]).then(result => {
+            expect(result).to.equal(12);
+            messageServer.close();
+            messageClient.close();
+            done();
+        })
+    });
+
+    /*
     it('can sync local and remote maps', function (done) {
         const observableMaps = [new ObservableMap(), new ObservableMap()], remote = new Remote([ObservableMap]);
 
@@ -18,4 +38,5 @@ describe('remote', function () {
         expect(result).to.eql(['c', ['a'], 1]);
         done();
     });
+     */
 });

@@ -14,6 +14,8 @@ describe('MessageServer', function () {
 
         messageClient.onMessage(message => {
             expect(message).to.equal('hello');
+            messageServer.close();
+            messageClient.close();
             done();
         });
 
