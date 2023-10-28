@@ -8,6 +8,8 @@ export class MessageServer {
     #onClose;
     #onError;
     #onMessage;
+    #replacer;
+    #reviver;
     #server;
     #webSocketServer;
 
@@ -21,6 +23,8 @@ export class MessageServer {
     constructor({server, replacer, reviver}) {
         this.#server = server;
         this.#webSocketServer = new WebSocketServer({server: server});
+        this.#replacer = replacer;
+        this.#reviver = reviver;
     }
 
     /**
@@ -33,7 +37,7 @@ export class MessageServer {
 
     /**
      * Listens for new connections. The value returned by `callback` is passed to "close" and "message" event handlers.
-     * @param {function(function(message: string): void, request: any): any} callback
+     * @param {function(function(message: any): void, request: any): any} callback
      * @param {number} [port = 8080]
      */
 
@@ -51,10 +55,18 @@ export class MessageServer {
         this.#webSocketServer.on('connection', (webSocket, request) => {
             webSocket.on('error', error => (this.#onError ?? rethrow)(error));
 
+            const send = message => {
+                webSocket.send(JSON.stringify(message, this.#replacer));
+            }
+
             try {
-                const state = callback(message => void webSocket.send(message), request);
+                const state = callback(send, request);
                 webSocket.on('close', () => (this.#onClose ?? ignore)(state));
-                webSocket.on('message', message => (this.#onMessage ?? ignore)(state, `${message}`));
+
+                webSocket.on('message', message =>
+                    (this.#onMessage ?? ignore)(state, JSON.parse(message, this.#reviver))
+                );
+
             } catch (error) {
                 (this.#onError ?? rethrow)(error);
             }

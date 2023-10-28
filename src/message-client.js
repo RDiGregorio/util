@@ -8,6 +8,8 @@ import {createPromise} from './async.js';
 export class MessageClient {
     #promise;
     #webSocket;
+    #replacer;
+    #reviver;
 
     /**
      * Creates a new `MessageClient`.
@@ -23,6 +25,8 @@ export class MessageClient {
         const [promise, resolve] = createPromise();
         this.#promise = promise;
         this.#webSocket.on('open', resolve);
+        this.#replacer = replacer;
+        this.#reviver = reviver;
     }
 
     /**
@@ -57,16 +61,16 @@ export class MessageClient {
      */
 
     onMessage(callback) {
-        this.#webSocket.on('message', message => callback(`${message}`));
+        this.#webSocket.on('message', message => callback(JSON.parse(message, this.#reviver)));
     }
 
     /**
-     * @param {string} message
+     * @param {any} message
      * @return {Promise<void>}
      */
 
     async send(message) {
         await this.#promise;
-        this.#webSocket.send(message);
+        this.#webSocket.send(JSON.stringify(message, this.#replacer));
     }
 }

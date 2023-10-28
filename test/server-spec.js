@@ -6,8 +6,8 @@ import {MessageClient} from '../src/message-client.js';
 describe('MessageServer', function () {
     it('can echo', function (done) {
         const
-            messageServer = new MessageServer(createServer()),
-            messageClient = new MessageClient();
+            messageServer = new MessageServer({server: createServer()}),
+            messageClient = new MessageClient({host: 'localhost'});
 
         messageServer.listen(send => send);
         messageServer.onMessage((send, message) => send(message));
