@@ -2,6 +2,8 @@ import _ from 'lodash';
 import {WebSocketServer} from 'ws';
 import {createPromise} from './async.js';
 
+// todo: handle on close?
+
 class Server {
     #onConnect;
     #onError;

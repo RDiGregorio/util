@@ -7,24 +7,23 @@ class Client {
         this.#socket = new WebSocket(`${secure ? 'wss' : 'ws'}://${host}:${port}`);
     }
 
-    onOpen(callback) {
+    onClose(callback) {
+        this.#socket.on('close', callback);
+    }
 
+    onOpen(callback) {
+        this.#socket.on('open', callback);
     }
 
     onError(callback) {
+        this.#socket.on('error', callback);
+    }
 
+    onMessage(callback) {
+        this.#socket.on('message', callback);
+    }
+
+    close() {
+        this.#socket.close();
     }
 }
-
-const ws = new WebSocket('ws://localhost:8080');
-
-ws.on('error', console.error);
-
-ws.on('open', function open() {
-    console.log('test2');
-    ws.send('something');
-});
-
-ws.on('message', function message(data) {
-    console.log('received: %s', data);
-});
