@@ -47,13 +47,13 @@ export class MessageServer {
         this.#webSocketServer.on('error', error => (this.#onError ?? rethrow)(error));
         this.#webSocketServer.on('wsClientError', error => (this.#onError ?? rethrow)(error));
 
-        this.#webSocketServer.on('connection', (socket, request) => {
-            socket.on('error', error => (this.#onError ?? rethrow)(error));
+        this.#webSocketServer.on('connection', (webSocket, request) => {
+            webSocket.on('error', error => (this.#onError ?? rethrow)(error));
 
             try {
-                const state = callback(message => void socket.send(message), request);
-                socket.on('close', () => (this.#onClose ?? ignore)(state));
-                socket.on('message', message => (this.#onMessage ?? ignore)(state, `${message}`));
+                const state = callback(message => void webSocket.send(message), request);
+                webSocket.on('close', () => (this.#onClose ?? ignore)(state));
+                webSocket.on('message', message => (this.#onMessage ?? ignore)(state, `${message}`));
             } catch (error) {
                 (this.#onError ?? rethrow)(error);
             }

@@ -7,7 +7,7 @@ import {createPromise} from './async.js';
 
 export class MessageClient {
     #promise;
-    #socket;
+    #webSocket;
 
     /**
      * Creates a new `MessageClient`.
@@ -17,10 +17,10 @@ export class MessageClient {
      */
 
     constructor(host, port, secure = false) {
-        this.#socket = new WebSocket(`${secure ? 'wss' : 'ws'}://${host}:${port}`);
+        this.#webSocket = new WebSocket(`${secure ? 'wss' : 'ws'}://${host}:${port}`);
         const [promise, resolve] = createPromise();
         this.#promise = promise;
-        this.#socket.on('open', resolve);
+        this.#webSocket.on('open', resolve);
     }
 
     /**
@@ -28,7 +28,7 @@ export class MessageClient {
      */
 
     close() {
-        this.#socket.close();
+        this.#webSocket.close();
     }
 
     /**
@@ -37,7 +37,7 @@ export class MessageClient {
      */
 
     onClose(callback) {
-        this.#socket.on('close', () => callback);
+        this.#webSocket.on('close', () => callback);
     }
 
     /**
@@ -46,7 +46,7 @@ export class MessageClient {
      */
 
     onError(callback) {
-        this.#socket.on('error', error => callback(error));
+        this.#webSocket.on('error', error => callback(error));
     }
 
     /**
@@ -55,7 +55,7 @@ export class MessageClient {
      */
 
     onMessage(callback) {
-        this.#socket.on('message', message => callback(`${message}`));
+        this.#webSocket.on('message', message => callback(`${message}`));
     }
 
     /**
@@ -65,6 +65,6 @@ export class MessageClient {
 
     async send(message) {
         await this.#promise;
-        this.#socket.send(message);
+        this.#webSocket.send(message);
     }
 }
