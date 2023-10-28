@@ -1,5 +1,5 @@
 import WebSocket from 'ws';
-import {createPromise} from "./async.js";
+import {createPromise} from './async.js';
 
 /**
  * A client that can send and receive messages.

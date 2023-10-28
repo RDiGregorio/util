@@ -1,5 +1,4 @@
 import {WebSocketServer} from 'ws';
-import {createPromise} from './async.js';
 
 /**
  * A server that can send and receive messages.
@@ -52,7 +51,7 @@ export class MessageServer {
             socket.on('error', error => (this.#onError ?? rethrow)(error));
 
             try {
-                const state = callback(socket, request);
+                const state = callback(message => void socket.send(message), request);
                 socket.on('close', () => (this.#onClose ?? ignore)(state));
                 socket.on('message', message => (this.#onMessage ?? ignore)(state, `${message}`));
             } catch (error) {
