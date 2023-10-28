@@ -1,6 +1,5 @@
 import {expect} from 'chai';
 import {ObservableMap} from '../src/observable-map.js';
-import {createMapReviver, mapReplacer} from '../src/json.js';
 import {Remote} from '../src/remote.js';
 
 describe('remote', function () {
