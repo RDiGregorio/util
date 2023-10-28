@@ -5,32 +5,44 @@ import {createPromise} from './async.js';
  * A server that can send and receive messages.
  */
 
-class MessageServer {
+export class MessageServer {
     #onClose;
     #onError;
     #onMessage;
     #onConnection;
-    #port;
     #server;
+    #close;
 
     /**
-     * Creates a new `MessageServer`.
+     * Creates a new `MessageServer` from an HTTP or HTTPS server.
      * @param {any} server
-     * @param {number} port
      */
 
-    constructor(server, port) {
-        this.#server = server;
-        this.#port = port;
+    constructor(server) {
+        this.#server = new WebSocketServer({server: server});
+        this.#close = server.close;
     }
 
-    connect() {
+    /**
+     * Stops listening for new connections and closes all existing connections.
+     */
+
+    close() {
+        this.#close();
+    }
+
+    /**
+     * Listens for new connections.
+     * @param {number} port
+     * @return {Promise}
+     */
+
+    listen(port) {
         function rethrow(error) {
             throw error;
         }
 
         const [promise, resolve] = createPromise();
-        this.#server = new WebSocketServer({server: this.#server});
         this.#server.on('error', error => (this.#onError ?? rethrow)(error));
         this.#server.on('wsClientError', error => (this.#onError ?? rethrow)(error));
         this.#server.on('listening', () => resolve());
@@ -48,20 +60,12 @@ class MessageServer {
             }
         });
 
-        this.#server.listen(this.#port);
+        this.#server.listen(port);
         return promise;
     }
 
     /**
-     * Closes the connection.
-     */
-
-    close() {
-        this.#server.close();
-    }
-
-    /**
-     * Handles "close" events.
+     * Handles "close" events from connections.
      * @param {function(state: any): void} callback
      */
 
@@ -89,7 +93,7 @@ class MessageServer {
     }
 
     /**
-     * Handles "message" events.
+     * Handles "message" events from connections.
      * @param {function(message: any, state: any): void} callback
      */
 
