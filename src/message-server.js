@@ -7,19 +7,18 @@ import {createPromise} from './async.js';
  */
 
 class MessageServer {
-    #callback;
     #onClose;
     #onError;
     #onMessage;
+    #onConnection;
     #server;
 
     /**
      * Creates a new `MessageServer`.
      * @param {any} server
-     * @param {function(socket: any, request: any): any[]} callback
      */
 
-    constructor(server, callback) {
+    constructor(server) {
         this.#server = server;
         this.#callback = callback;
     }
@@ -40,9 +39,9 @@ class MessageServer {
             socket.on('error', error => this.#onError(error));
 
             try {
-                const array = this.#callback(socket, request);
-                socket.on('close', () => this.#onClose(...array));
-                socket.on('message', message => this.#onMessage(message, ...array));
+                const state = this.#onConnection(socket, request);
+                socket.on('close', () => this.#onClose(state));
+                socket.on('message', message => this.#onMessage(message, state));
             } catch (error) {
                 this.#onError(error);
             }
@@ -61,11 +60,21 @@ class MessageServer {
 
     /**
      * Handles "close" events.
-     * @param {function(...value: any): void} callback
+     * @param {function(state: any): void} callback
      */
 
     onClose(callback) {
         this.#onClose = callback;
+    }
+
+    /**
+     * Handles "connection" events. Returns the state object used by "close" and "message" event handlers.
+     * @param callback
+     * @return {any}
+     */
+
+    onConnection(callback) {
+        this.#onConnection = callback
     }
 
     /**
@@ -79,7 +88,7 @@ class MessageServer {
 
     /**
      * Handles "message" events.
-     * @param {function(message: any, ...value: any): void} callback
+     * @param {function(message: any, state: any): void} callback
      */
 
     onMessage(callback) {
