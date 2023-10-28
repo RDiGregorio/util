@@ -4,7 +4,7 @@ import {createPromise} from './async.js';
  * Calls functions on remote objects.
  */
 
-export class Remote {
+export class RemoteController {
     #callbacks = new Map();
     #id = 0;
     #messageClient;
