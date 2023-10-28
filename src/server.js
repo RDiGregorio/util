@@ -47,6 +47,11 @@ class Server {
         this.#server.close();
     }
 
+
+    onClose() {
+
+    }
+
     onConnect(callback) {
         Server.#validateFunction(callback);
         this.#onConnect = callback;
@@ -57,8 +62,12 @@ class Server {
         this.#onError = callback;
     }
 
-    onMessage(callback) {
+    onSocketMessage(callback) {
         Server.#validateFunction(callback);
         this.#onMessage = callback;
+    }
+
+    onSocketClose() {
+
     }
 }
