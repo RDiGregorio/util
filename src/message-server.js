@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import {WebSocketServer} from 'ws';
 import {createPromise} from './async.js';
 
@@ -11,39 +10,45 @@ class MessageServer {
     #onError;
     #onMessage;
     #onConnection;
+    #port;
     #server;
 
     /**
      * Creates a new `MessageServer`.
      * @param {any} server
+     * @param {number} port
      */
 
-    constructor(server) {
+    constructor(server, port) {
         this.#server = server;
+        this.#port = port;
     }
 
     connect() {
-        // todo: need to better handle errors
+        function rethrow(error) {
+            throw error;
+        }
 
         const [promise, resolve] = createPromise();
         this.#server = new WebSocketServer({server: this.#server});
-        this.#server.on('error', error => this.#onError(error));
-        this.#server.on('wsClientError', error => this.#onError(error));
+        this.#server.on('error', error => (this.#onError ?? rethrow)(error));
+        this.#server.on('wsClientError', error => (this.#onError ?? rethrow)(error));
         this.#server.on('listening', () => resolve());
         this.#server.on('close', () => resolve());
 
         this.#server.on('connection', (socket, request) => {
-            socket.on('error', error => this.#onError(error));
+            socket.on('error', error => (this.#onError ?? rethrow)(error));
 
             try {
                 const state = this.#onConnection?.call(socket, request);
                 socket.on('close', () => this.#onClose?.call(state));
                 socket.on('message', message => this.#onMessage?.call(message, state));
             } catch (error) {
-                this.#onError(error);
+                (this.#onError ?? rethrow)(error);
             }
         });
 
+        this.#server.listen(this.#port);
         return promise;
     }
 
