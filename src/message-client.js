@@ -1,10 +1,12 @@
 import WebSocket from 'ws';
+import {createPromise} from "./async.js";
 
 /**
  * A client that can send and receive messages.
  */
 
 export class MessageClient {
+    #promise;
     #socket;
 
     /**
@@ -16,6 +18,9 @@ export class MessageClient {
 
     constructor(host, port, secure = false) {
         this.#socket = new WebSocket(`${secure ? 'wss' : 'ws'}://${host}:${port}`);
+        const [promise, resolve] = createPromise();
+        this.#promise = promise;
+        this.#socket.on('open', resolve);
     }
 
     /**
@@ -33,15 +38,6 @@ export class MessageClient {
 
     onClose(callback) {
         this.#socket.on('close', () => callback);
-    }
-
-    /**
-     * Handles "open" events.
-     * @param callback
-     */
-
-    onOpen(callback) {
-        this.#socket.on('open', () => callback());
     }
 
     /**
@@ -64,9 +60,11 @@ export class MessageClient {
 
     /**
      * @param {string} message
+     * @return {Promise<void>}
      */
 
-    send(message) {
+    async send(message) {
+        await this.#promise;
         this.#socket.send(message);
     }
 }

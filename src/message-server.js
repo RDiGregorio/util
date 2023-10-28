@@ -11,6 +11,7 @@ export class MessageServer {
     #onMessage;
     #onConnection;
     #server;
+    #webSocketServer;
     #close;
 
     /**
@@ -19,8 +20,8 @@ export class MessageServer {
      */
 
     constructor(server) {
-        this.#server = new WebSocketServer({server: server});
-        this.#close = server.close;
+        this.#server = server;
+        this.#webSocketServer = new WebSocketServer({server: server});
     }
 
     /**
@@ -28,7 +29,7 @@ export class MessageServer {
      */
 
     close() {
-        this.#close();
+        this.#server.close();
     }
 
     /**
@@ -42,19 +43,22 @@ export class MessageServer {
             throw error;
         }
 
-        const [promise, resolve] = createPromise();
-        this.#server.on('error', error => (this.#onError ?? rethrow)(error));
-        this.#server.on('wsClientError', error => (this.#onError ?? rethrow)(error));
-        this.#server.on('listening', () => resolve());
-        this.#server.on('close', () => resolve());
+        function ignore() {
+        }
 
-        this.#server.on('connection', (socket, request) => {
+        const [promise, resolve] = createPromise();
+        this.#webSocketServer.on('error', error => (this.#onError ?? rethrow)(error));
+        this.#webSocketServer.on('wsClientError', error => (this.#onError ?? rethrow)(error));
+        this.#webSocketServer.on('listening', () => resolve());
+        this.#webSocketServer.on('close', () => resolve());
+
+        this.#webSocketServer.on('connection', (socket, request) => {
             socket.on('error', error => (this.#onError ?? rethrow)(error));
 
             try {
-                const state = this.#onConnection?.call(socket, request);
-                socket.on('close', () => this.#onClose?.call(state));
-                socket.on('message', message => this.#onMessage?.call(message, state));
+                const state = (this.#onConnection ?? ignore)(socket, request);
+                socket.on('close', () => (this.#onClose ?? ignore)(state));
+                socket.on('message', message => (this.#onMessage ?? ignore)(message, state));
             } catch (error) {
                 (this.#onError ?? rethrow)(error);
             }
