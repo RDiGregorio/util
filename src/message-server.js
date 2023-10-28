@@ -7,14 +7,21 @@ import {createPromise} from './async.js';
  */
 
 class MessageServer {
+    #callback;
     #onClose;
-    #onConnection;
     #onError;
     #onMessage;
     #server;
 
-    constructor(server) {
+    /**
+     * Creates a new `MessageServer`.
+     * @param {any} server
+     * @param {function(socket: any, request: any): any[]} callback
+     */
+
+    constructor(server, callback) {
         this.#server = server;
+        this.#callback = callback;
     }
 
     static #validateFunction(key, callback) {
@@ -33,7 +40,7 @@ class MessageServer {
             socket.on('error', error => this.#onError(error));
 
             try {
-                const array = this.#onConnection(socket, request);
+                const array = this.#callback(socket, request);
                 socket.on('close', () => this.#onClose(...array));
                 socket.on('message', message => this.#onMessage(message, ...array));
             } catch (error) {
@@ -52,17 +59,28 @@ class MessageServer {
         this.#server.close();
     }
 
+    /**
+     * Handles "close" events.
+     * @param {function(...value: any): void} callback
+     */
+
     onClose(callback) {
         this.#onClose = callback;
     }
 
-    onConnection(callback) {
-        this.#onConnection = callback;
-    }
+    /**
+     * Handles "error" events.
+     * @param {function(error: any): void} callback
+     */
 
     onError(callback) {
         this.#onError = callback;
     }
+
+    /**
+     * Handles "message" events.
+     * @param {function(message: any, ...value: any): void} callback
+     */
 
     onMessage(callback) {
         this.#onMessage = callback;

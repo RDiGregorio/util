@@ -8,7 +8,7 @@ class MessageClient {
     #socket;
 
     /**
-     * Creates a new `Client`.
+     * Creates a new `MessageClient`.
      * @param {string} host
      * @param {number} port
      * @param {boolean} secure
