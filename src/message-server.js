@@ -20,14 +20,11 @@ class MessageServer {
 
     constructor(server) {
         this.#server = server;
-        this.#callback = callback;
-    }
-
-    static #validateFunction(key, callback) {
-        if (!_.isFunction(callback)) throw new Error(`invalid function: ${key}`);
     }
 
     connect() {
+        // todo: need to better handle errors
+
         const [promise, resolve] = createPromise();
         this.#server = new WebSocketServer({server: this.#server});
         this.#server.on('error', error => this.#onError(error));
@@ -39,9 +36,9 @@ class MessageServer {
             socket.on('error', error => this.#onError(error));
 
             try {
-                const state = this.#onConnection(socket, request);
-                socket.on('close', () => this.#onClose(state));
-                socket.on('message', message => this.#onMessage(message, state));
+                const state = this.#onConnection?.call(socket, request);
+                socket.on('close', () => this.#onClose?.call(state));
+                socket.on('message', message => this.#onMessage?.call(message, state));
             } catch (error) {
                 this.#onError(error);
             }
