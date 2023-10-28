@@ -8,8 +8,8 @@ describe('remote', function () {
     it('can call remote functions', function (done) {
         const
             target = {add: (left, right) => left + right},
-            messageServer = new MessageServer(createServer()),
-            messageClient = new MessageClient();
+            messageServer = new MessageServer({server: createServer()}),
+            messageClient = new MessageClient({host: 'localhost'});
 
         messageServer.listen(send => ({target, send}));
         messageServer.onMessage(Remote.callHandler);

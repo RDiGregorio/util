@@ -11,12 +11,14 @@ export class MessageClient {
 
     /**
      * Creates a new `MessageClient`.
-     * @param {string} [host = "localhost"]
+     * @param {string} host
      * @param {number} [port = 8080]
      * @param {boolean} [secure = false]
+     * @param {function(key: number|string, value: any): any} [replacer]
+     * @param {function(key: number|string, value: any): any} [reviver]
      */
 
-    constructor(host = 'localhost', port = 8080, secure = false) {
+    constructor({host, port = 8080, secure = false, replacer, reviver}) {
         this.#webSocket = new WebSocket(`${secure ? 'wss' : 'ws'}://${host}:${port}`);
         const [promise, resolve] = createPromise();
         this.#promise = promise;

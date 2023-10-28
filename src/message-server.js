@@ -14,9 +14,11 @@ export class MessageServer {
     /**
      * Creates a new `MessageServer` from an HTTP or HTTPS server.
      * @param {any} server
+     * @param {function(key: number|string, value: any): any} [replacer]
+     * @param {function(key: number|string, value: any): any} [reviver]
      */
 
-    constructor(server) {
+    constructor({server, replacer, reviver}) {
         this.#server = server;
         this.#webSocketServer = new WebSocketServer({server: server});
     }
