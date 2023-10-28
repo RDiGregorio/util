@@ -31,12 +31,11 @@ export class MessageServer {
 
     /**
      * Listens for new connections. The value returned by `callback` is passed to "close" and "message" event handlers.
-     * @param {number} port
      * @param {function(function(message: string): void, request: any): any} callback
-     * @return {Promise}
+     * @param {number} [port = 8080]
      */
 
-    listen(port, callback) {
+    listen(callback, port = 8080) {
         function rethrow(error) {
             throw error;
         }

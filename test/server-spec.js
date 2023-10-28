@@ -7,9 +7,9 @@ describe('MessageServer', function () {
     it('can echo', function (done) {
         const
             messageServer = new MessageServer(createServer()),
-            messageClient = new MessageClient('localhost', 8080);
+            messageClient = new MessageClient();
 
-        messageServer.listen(8080, send => send);
+        messageServer.listen(send => send);
         messageServer.onMessage((send, message) => send(message));
 
         messageClient.onMessage(message => {
