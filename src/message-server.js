@@ -32,7 +32,7 @@ export class MessageServer {
     /**
      * Listens for new connections. The value returned by `callback` is passed to "close" and "message" event handlers.
      * @param {number} port
-     * @param {function(socket: any, request: any): any} callback
+     * @param {function(function(message: string): void, request: any): any} callback
      * @return {Promise}
      */
 
