@@ -2,7 +2,7 @@
  * Copies the state a remote `ObservableMap`.
  */
 
-class RemoteModel {
+export class RemoteModel {
     #messageClient;
 
     /**
@@ -46,14 +46,18 @@ class RemoteModel {
     }
 
     /**
-     * Sends an update to the client side copy.
+     * Sends updates to the client side copy.
+     * @param {ObservableMap} observableMap
      * @param {function(message: any): void} send
-     * @param {string} type
-     * @param {any[]} path
-     * @param {any} value
      */
 
-    static eventHandler(send, type, path, value) {
-        send(['__update__', type, path, value]);
+    static sendUpdates(observableMap, send) {
+        const cancel = observableMap.addEventListener((type, path, value) => {
+            try {
+                send(['__update__', type, path, value]);
+            } catch (error) {
+                cancel();
+            }
+        });
     }
 }
