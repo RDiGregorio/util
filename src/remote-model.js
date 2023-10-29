@@ -1,15 +1,19 @@
+import {ObservableMap} from './observable-map.js';
+
 /**
- * Copies a remote `ObservableMap`.
+ * A client side `ObservableMap` that copies a server side `ObservableMap`.
  */
 
 export class RemoteModel {
     /**
-     * Creates a new `RemoteModel`.
-     * @param {ObservableMap} observableMap
+     * Returns the client side model.
      * @param {MessageClient} messageClient
+     * @return {ObservableMap}
      */
 
-    constructor(observableMap, messageClient) {
+    static client(messageClient) {
+        const observableMap = new ObservableMap();
+
         messageClient.onMessage(message => {
             let messageType, eventType, path, value;
 
@@ -43,15 +47,18 @@ export class RemoteModel {
                 path.reduce((result, key) => result.get(key), observableMap).dispatchEvent(eventType, value);
             }
         });
+
+        return observableMap;
     }
 
     /**
-     * Sends updates to the client side copy.
-     * @param {ObservableMap} observableMap
+     * Returns the server side model.
      * @param {function(message: any): void} send
+     * @return {ObservableMap}
      */
 
-    static sendUpdates(observableMap, send) {
+    static server(send) {
+        const observableMap = new ObservableMap();
         send(['__update__', 'update', [], observableMap]);
 
         const cancel = observableMap.addEventListener((type, path, value) => {
@@ -62,5 +69,7 @@ export class RemoteModel {
                 cancel();
             }
         });
+
+        return observableMap;
     }
 }
