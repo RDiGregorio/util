@@ -23,6 +23,11 @@ export class RemoteModel {
                 return;
             }
 
+            if (messageType === '__init__') {
+                [...value].forEach(entry => observableMap.set(...entry));
+                return;
+            }
+
             if (messageType === '__update__') {
                 if (eventType === 'delete') {
                     if (path.length === 0) throw new Error('missing key for delete event');
@@ -52,7 +57,7 @@ export class RemoteModel {
      */
 
     static sendUpdates(observableMap, send) {
-        send(['__update__', 'update', [], observableMap]);
+        send(['__init__', 'update', [], observableMap]);
 
         const cancel = observableMap.addEventListener((type, path, value) => {
             try {
