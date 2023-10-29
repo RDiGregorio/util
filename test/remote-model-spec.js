@@ -4,7 +4,7 @@ import {ObservableMap} from '../src/observable-map.js';
 import {MessageServer} from '../src/message-server.js';
 import {MessageClient} from '../src/message-client.js';
 import {RemoteModel} from '../src/remote-model.js';
-import {createMapReviver, mapReplacer} from "../src/json.js";
+import {createMapReviver, mapReplacer} from '../src/json.js';
 
 describe('RemoteModel', function () {
     it('can copy a remote object', function (done) {
