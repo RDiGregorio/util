@@ -10,7 +10,7 @@ export class RemoteController {
     #messageClient;
 
     /**
-     * Creates a new `Remote`.
+     * Creates a new `RemoteController`.
      * @param {MessageClient} messageClient
      */
 
@@ -21,7 +21,7 @@ export class RemoteController {
             let type, path, value;
 
             try {
-                [type, path, value] = JSON.parse(message);
+                [type, path, value] = message;
             } catch (error) {
                 return;
             }
@@ -36,7 +36,7 @@ export class RemoteController {
 
     /**
      * @param {any} target
-     * @param {function(message: string): void} send
+     * @param {function(message: any): void} send
      * @param {string} message
      */
 
@@ -44,12 +44,12 @@ export class RemoteController {
         let type, id, key, values;
 
         try {
-            [type, id, key, values] = JSON.parse(message);
+            [type, id, key, values] = message
         } catch (error) {
             return;
         }
 
-        if (type === '__call__') send(JSON.stringify(['__call__', id, target[key](...values)]));
+        if (type === '__call__') send(['__call__', id, target[key](...values)]);
     }
 
     /**
@@ -62,7 +62,7 @@ export class RemoteController {
     call(key, values) {
         const id = this.#id++, [promise, resolve] = createPromise();
         this.#callbacks.set(id, resolve);
-        this.#messageClient.send(JSON.stringify(['__call__', id, key, values]));
+        this.#messageClient.send(['__call__', id, key, values]);
         return promise;
     }
 }
