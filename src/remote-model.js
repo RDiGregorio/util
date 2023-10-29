@@ -52,10 +52,14 @@ export class RemoteModel {
      */
 
     static sendUpdates(observableMap, send) {
+        send(['__update__', 'update', [], observableMap]);
+
         const cancel = observableMap.addEventListener((type, path, value) => {
             try {
+                console.log(['__update__', type, path, value]);
                 send(['__update__', type, path, value]);
             } catch (error) {
+                console.log(error);
                 cancel();
             }
         });

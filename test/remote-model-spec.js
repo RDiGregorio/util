@@ -18,6 +18,7 @@ describe('RemoteModel', function () {
         const remoteModel = new RemoteModel(observableMaps[1], messageClient);
 
         observableMaps[0].set('a', new ObservableMap([['b', 0]]));
+        console.log(observableMaps[0]);
 
         observableMaps[1].addEventListener(() => {
             expect(observableMaps[0]).to.eql(observableMaps[1]);
