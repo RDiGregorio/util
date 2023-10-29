@@ -8,9 +8,8 @@ import {createMapReviver, mapReplacer} from "../src/json.js";
 
 describe('RemoteModel', function () {
     it('can copy a remote object', function (done) {
-        const observableMaps = [new ObservableMap(), new ObservableMap()]
-
         const
+            observableMaps = [new ObservableMap(), new ObservableMap()],
             messageServer = new MessageServer({
                 server: createServer(),
                 replacer: mapReplacer,
@@ -23,14 +22,14 @@ describe('RemoteModel', function () {
             });
 
         messageServer.listen(send => RemoteModel.sendUpdates(observableMaps[0], send));
-
-        const remoteModel = new RemoteModel(observableMaps[1], messageClient);
+        new RemoteModel(observableMaps[1], messageClient);
 
         observableMaps[0].set('a', new ObservableMap([['b', 0]]));
-        console.log(observableMaps[0]);
 
         observableMaps[1].addEventListener(() => {
             expect(observableMaps[0]).to.eql(observableMaps[1]);
+            messageClient.close();
+            messageServer.close();
             done();
         })
     });

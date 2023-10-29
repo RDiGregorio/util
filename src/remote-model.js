@@ -1,10 +1,8 @@
 /**
- * Copies the state a remote `ObservableMap`.
+ * Copies a remote `ObservableMap`.
  */
 
 export class RemoteModel {
-    #messageClient;
-
     /**
      * Creates a new `RemoteModel`.
      * @param {ObservableMap} observableMap
@@ -12,19 +10,12 @@ export class RemoteModel {
      */
 
     constructor(observableMap, messageClient) {
-        this.#messageClient = messageClient;
-
         messageClient.onMessage(message => {
             let messageType, eventType, path, value;
 
             try {
                 [messageType, eventType, path, value] = message;
             } catch (error) {
-                return;
-            }
-
-            if (messageType === '__init__') {
-                [...value].forEach(entry => observableMap.set(...entry));
                 return;
             }
 
@@ -38,7 +29,11 @@ export class RemoteModel {
                 }
 
                 if (eventType === 'update') {
-                    if (path.length === 0) throw new Error('missing key for update event');
+                    if (path.length === 0) {
+                        [...value].forEach(entry => observableMap.set(...entry));
+                        return;
+                    }
+
                     path = [...path];
                     const key = path.pop(), source = path.reduce((result, key) => result.get(key), observableMap);
                     source.set(key, value);
@@ -57,11 +52,10 @@ export class RemoteModel {
      */
 
     static sendUpdates(observableMap, send) {
-        send(['__init__', 'update', [], observableMap]);
+        send(['__update__', 'update', [], observableMap]);
 
         const cancel = observableMap.addEventListener((type, path, value) => {
             try {
-                console.log(['__update__', type, path, value]);
                 send(['__update__', type, path, value]);
             } catch (error) {
                 console.log(error);
