@@ -35,6 +35,7 @@ export class RemoteController {
     }
 
     /**
+     * Handles calls. Used server side.
      * @param {any} target
      * @param {function(message: any): void} send
      * @param {string} message
@@ -53,7 +54,7 @@ export class RemoteController {
     }
 
     /**
-     * Calls a remote function.
+     * Calls a server side function. Use client side.
      * @param {string} key
      * @param {any[]} values
      * @return {Promise<any>}
