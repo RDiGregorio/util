@@ -7,12 +7,12 @@ import {MessageServer} from '../src/message-server.js';
 describe('RemoteController', function () {
     it('can call remote functions', function (done) {
         const
-            target = {add: (left, right) => left + right},
+            controller = {add: (left, right) => left + right},
             messageServer = new MessageServer({server: createServer()}),
             messageClient = new MessageClient({host: 'localhost'});
 
-        messageServer.listen(send => ({target, send}));
-        messageServer.onMessage(RemoteController.callHandler);
+        messageServer.listen(send => ({controller, send}));
+        messageServer.onMessage(RemoteController.handle);
 
         new RemoteController(messageClient).call('add', [5, 7]).then(result => {
             expect(result).to.equal(12);
