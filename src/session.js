@@ -1,7 +1,7 @@
 import {MessageServer} from './message-server.js';
-import {RemoteController} from './remote-controller.js';
-import {RemoteModel} from './remote-model.js';
 import {MessageClient} from './message-client.js';
+import {RemoteModel} from './remote-model.js';
+import {RemoteController} from './remote-controller.js';
 
 export class Session {
 
