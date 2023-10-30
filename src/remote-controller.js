@@ -34,6 +34,11 @@ export class RemoteController {
         });
     }
 
+    /**
+     * @param {MessageServer} messageServer
+     * @param {any} controller
+     */
+
     static server(messageServer, controller) {
         // todo: make listen optional
         messageServer.listen(() => undefined);

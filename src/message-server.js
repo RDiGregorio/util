@@ -5,9 +5,9 @@ import {WebSocketServer} from 'ws';
  */
 
 export class MessageServer {
-    #onClose;
-    #onError;
-    #onMessage;
+    #onClose = [];
+    #onError = [];
+    #onMessage = [];
     #replacer;
     #reviver;
     #server;
@@ -42,31 +42,29 @@ export class MessageServer {
      */
 
     listen(callback, port = 8080) {
-        function rethrow(error) {
-            throw error;
+        const handleError = (error) => {
+            if (this.#onError.length === 0) throw error;
+            this.#onError.forEach(callback => callback(error));
         }
 
-        this.#webSocketServer.on('error', error => (this.#onError ?? rethrow)(error));
-        this.#webSocketServer.on('wsClientError', error => (this.#onError ?? rethrow)(error));
+        this.#webSocketServer.on('error', handleError);
+        this.#webSocketServer.on('wsClientError', handleError);
 
         this.#webSocketServer.on('connection', (webSocket, request) => {
-            webSocket.on('error', error => (this.#onError ?? rethrow)(error));
-
-            const send = message => {
-                webSocket.send(JSON.stringify(message, this.#replacer));
-            }
+            webSocket.on('error', handleError);
+            const send = message => void webSocket.send(JSON.stringify(message, this.#replacer))
 
             try {
                 const state = {};
                 callback(state, send, request);
-                webSocket.on('close', () => (this.#onClose ?? (() => undefined))(state));
+                webSocket.on('close', () => this.#onClose.forEach(callback => callback(state)));
 
                 webSocket.on('message', message =>
-                    (this.#onMessage ?? (() => undefined))(state, send, JSON.parse(message, this.#reviver))
+                    this.#onMessage.forEach(callback => callback(state, send, JSON.parse(message, this.#reviver)))
                 );
 
             } catch (error) {
-                (this.#onError ?? rethrow)(error);
+                handleError(error);
             }
         });
 
@@ -79,7 +77,7 @@ export class MessageServer {
      */
 
     onClose(callback) {
-        this.#onClose = callback;
+        this.#onClose.push(callback);
     }
 
     /**
@@ -88,7 +86,7 @@ export class MessageServer {
      */
 
     onError(callback) {
-        this.#onError = callback;
+        this.#onError.push(callback);
     }
 
     /**
@@ -97,7 +95,6 @@ export class MessageServer {
      */
 
     onMessage(callback) {
-        // todo: allow multiple listeners
-        this.#onMessage = callback;
+        this.#onMessage.push(callback);
     }
 }
