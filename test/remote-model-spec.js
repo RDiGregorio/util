@@ -19,9 +19,10 @@ describe('RemoteModel', function () {
                 reviver: createMapReviver([ObservableMap])
             });
 
+        messageServer.listen();
         let serverObservableMap;
 
-        messageServer.listen((state, send) => {
+        messageServer.onConnection((state, send) => {
             serverObservableMap = RemoteModel.server(send);
             serverObservableMap.set('a', new ObservableMap([['b', 0]]));
         });

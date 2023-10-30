@@ -6,6 +6,7 @@ import {WebSocketServer} from 'ws';
 
 export class MessageServer {
     #onClose = [];
+    #onConnection = [];
     #onError = [];
     #onMessage = [];
     #replacer;
@@ -40,10 +41,9 @@ export class MessageServer {
 
     /**
      * Listens for new connections.
-     * @param {function(state: any, send: function(message: any): void, request: any): void} [callback]
      */
 
-    listen(callback) {
+    listen() {
         const handleError = (error) => {
             if (this.#onError.length === 0) throw error;
             this.#onError.forEach(callback => callback(error));
@@ -58,7 +58,7 @@ export class MessageServer {
 
             try {
                 const state = {};
-                if (arguments.length >= 1) callback(state, send, request);
+                this.#onConnection.forEach(callback => callback(state, send, request));
                 webSocket.on('close', () => this.#onClose.forEach(callback => callback(state)));
 
                 webSocket.on('message', message =>
@@ -80,6 +80,15 @@ export class MessageServer {
 
     onClose(callback) {
         this.#onClose.push(callback);
+    }
+
+    /**
+     * Handles "connection" events from connections.
+     * @param {function(state: any, send: function(message: any): void, request: any): void} [callback]
+     */
+
+    onConnection(callback) {
+        this.#onConnection.push(callback);
     }
 
     /**
