@@ -46,9 +46,6 @@ export class MessageServer {
             throw error;
         }
 
-        function ignore() {
-        }
-
         this.#webSocketServer.on('error', error => (this.#onError ?? rethrow)(error));
         this.#webSocketServer.on('wsClientError', error => (this.#onError ?? rethrow)(error));
 
@@ -62,10 +59,10 @@ export class MessageServer {
             try {
                 const state = {};
                 callback(state, send, request);
-                webSocket.on('close', () => (this.#onClose ?? ignore)(state));
+                webSocket.on('close', () => (this.#onClose ?? (() => undefined))(state));
 
                 webSocket.on('message', message =>
-                    (this.#onMessage ?? ignore)(state, send, JSON.parse(message, this.#reviver))
+                    (this.#onMessage ?? (() => undefined))(state, send, JSON.parse(message, this.#reviver))
                 );
 
             } catch (error) {
