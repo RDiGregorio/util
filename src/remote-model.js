@@ -7,13 +7,14 @@ import {createPromise} from './async.js';
 
 export class RemoteModel {
     /**
-     * Returns the client side model.
+     * Promises the client side model.
      * @param {MessageClient} messageClient
-     * @return {ObservableMap}
+     * @return {Promise<ObservableMap>}
      */
 
     static client(messageClient) {
-        const observableMap = new ObservableMap();
+        const [promise, resolve] = createPromise();
+        let observableMap;
 
         messageClient.onMessage(message => {
             let messageType, eventType, path, value;
@@ -26,7 +27,6 @@ export class RemoteModel {
 
             if (messageType === '__update__') {
                 if (eventType === 'delete') {
-                    if (path.length === 0) throw new Error('missing key for delete event');
                     path = [...path];
                     const key = path.pop(), source = path.reduce((result, key) => result.get(key), observableMap);
                     source.delete(key);
@@ -35,7 +35,8 @@ export class RemoteModel {
 
                 if (eventType === 'update') {
                     if (path.length === 0) {
-                        [...value].forEach(entry => observableMap.set(...entry));
+                        observableMap = value;
+                        resolve(observableMap);
                         return;
                     }
 
@@ -49,20 +50,17 @@ export class RemoteModel {
             }
         });
 
-        return observableMap;
+        return promise;
     }
 
     /**
-     * Promises the server side model.
+     * Sets the server side model.
      * @param {MessageServer} messageServer
-     * @return {Promise<ObservableMap>}
+     * @param {ObservableMap} observableMap
      */
 
-    static server(messageServer) {
-        const [promise, resolve] = createPromise();
-
+    static server(messageServer, observableMap) {
         messageServer.onConnection((state, send) => {
-            const observableMap = new ObservableMap();
             send(['__update__', 'update', [], observableMap]);
 
             const cancel = observableMap.addEventListener((type, path, value) => {
@@ -72,10 +70,6 @@ export class RemoteModel {
                     cancel();
                 }
             });
-
-            resolve(observableMap);
         });
-
-        return promise;
     }
 }

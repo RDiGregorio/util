@@ -5,10 +5,6 @@ import {createPromise} from './async.js';
  */
 
 export class RemoteController {
-    #callbacks = new Map();
-    #id = 0;
-    #messageClient;
-
     /**
      * Returns the client side controller.
      * @param {MessageClient} messageClient
@@ -48,7 +44,7 @@ export class RemoteController {
     }
 
     /**
-     * Returns the server side controller.
+     * Sets the server side controller.
      * @param {MessageServer} messageServer
      * @param {any} controller
      */
@@ -65,19 +61,5 @@ export class RemoteController {
 
             if (type === '__call__') send(['__call__', id, controller[key](...values)]);
         });
-    }
-
-    /**
-     * Calls a function on a remote object. Use client side.
-     * @param {string} key
-     * @param {any[]} values
-     * @return {Promise<any>}
-     */
-
-    call(key, values) {
-        const id = this.#id++, [promise, resolve] = createPromise();
-        this.#callbacks.set(id, resolve);
-        this.#messageClient.send(['__call__', id, key, values]);
-        return promise;
     }
 }

@@ -19,9 +19,13 @@ describe('RemoteModel', function () {
                 reviver: createMapReviver([ObservableMap])
             });
 
-        RemoteModel.server(messageServer).then(serverModel => {
-            serverModel.set('a', new ObservableMap([['b', 0]]));
-            const clientModel = RemoteModel.client(messageClient);
+        const serverModel = new ObservableMap();
+        RemoteModel.server(messageServer, serverModel);
+        serverModel.set('a', new ObservableMap([['b', 0]]));
+
+        RemoteModel.client(messageClient).then(clientModel => {
+            expect(serverModel).to.eql(clientModel);
+            serverModel.set('c', new ObservableMap([['d', 0]]));
 
             clientModel.addEventListener(() => {
                 expect(serverModel).to.eql(clientModel);
