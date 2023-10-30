@@ -46,7 +46,6 @@ export class MessageServer {
                 webSocket.on('message', message =>
                     this.#onMessage.forEach(callback => callback(send, JSON.parse(message, this.#reviver)))
                 );
-
             } catch (error) {
                 handleError(error);
             }

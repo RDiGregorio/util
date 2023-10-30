@@ -7,12 +7,11 @@ export class Session {
 
     // the idea is to tie the model/controller code together
 
-    static server({server, createController, replacer, reviver}) {
-        const messageServer = new MessageServer({server, replacer, reviver});
-        messageServer.listen(send => ({controller: createController(RemoteModel.server(send)), send}));
-        messageServer.onMessage(RemoteController.handleMessage);
-
-        // returns functions to close?
+    static server({server, port, model, controller, replacer, reviver}) {
+        const messageServer = new MessageServer({server, port, replacer, reviver});
+        RemoteModel.server(messageServer, model);
+        RemoteController.server(messageServer, controller);
+        return messageServer.close;
     }
 
     static client({host, port, secure, replacer, reviver}) {
