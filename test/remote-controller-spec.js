@@ -14,7 +14,7 @@ describe('RemoteController', function () {
 
         RemoteController.server(messageServer, {add: (left, right) => left + right});
 
-        new RemoteController(messageClient).call('add', [5, 7]).then(result => {
+        RemoteController.client(messageClient).add(5, 7).then(result => {
             expect(result).to.equal(12);
             messageServer.close();
             messageClient.close();

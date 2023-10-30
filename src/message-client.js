@@ -56,7 +56,7 @@ export class MessageClient {
     }
 
     /**
-     * Handles "message" events.
+     * Receives a message.
      * @param {function(message: any): void} callback
      */
 
@@ -65,12 +65,11 @@ export class MessageClient {
     }
 
     /**
+     * Sends a message.
      * @param {any} message
-     * @return {Promise<void>}
      */
 
-    async send(message) {
-        await this.#promise;
-        this.#webSocket.send(JSON.stringify(message, this.#replacer));
+    send(message) {
+        this.#promise.then(() => this.#webSocket.send(JSON.stringify(message, this.#replacer)));
     }
 }

@@ -1,7 +1,7 @@
 import {createPromise} from './async.js';
 
 /**
- * Calls functions on remote objects.
+ * TODO
  */
 
 export class RemoteController {
@@ -10,12 +10,14 @@ export class RemoteController {
     #messageClient;
 
     /**
-     * Creates a new `RemoteController`.
+     * Returns the client side controller.
      * @param {MessageClient} messageClient
+     * @return {any}
      */
 
-    constructor(messageClient) {
-        this.#messageClient = messageClient;
+    static client(messageClient) {
+        const callbacks = new Map();
+        let count = 0;
 
         messageClient.onMessage(message => {
             let type, path, value;
@@ -27,15 +29,26 @@ export class RemoteController {
             }
 
             if (type === '__call__') {
-                const resolve = this.#callbacks.get(path);
-                this.#callbacks.delete(path);
+                const resolve = callbacks.get(path);
+                callbacks.delete(path);
                 resolve(value);
             }
+        });
+
+        return new Proxy({}, {
+            get(object, key) {
+                return (...values) => {
+                    const id = count++, [promise, resolve] = createPromise();
+                    callbacks.set(id, resolve);
+                    messageClient.send(['__call__', id, key, values]);
+                    return promise;
+                }
+            },
         });
     }
 
     /**
-     * TODO
+     * Returns the server side controller.
      * @param {MessageServer} messageServer
      * @param {any} controller
      */

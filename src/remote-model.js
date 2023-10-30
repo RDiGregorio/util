@@ -2,7 +2,7 @@ import {ObservableMap} from './observable-map.js';
 import {createPromise} from './async.js';
 
 /**
- * A client side `ObservableMap` that copies a server side `ObservableMap`.
+ * TODO
  */
 
 export class RemoteModel {
@@ -53,7 +53,7 @@ export class RemoteModel {
     }
 
     /**
-     * TODO
+     * Promises the server side model.
      * @param {MessageServer} messageServer
      * @return {Promise<ObservableMap>}
      */
