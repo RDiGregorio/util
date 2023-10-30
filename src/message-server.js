@@ -97,6 +97,7 @@ export class MessageServer {
      */
 
     onMessage(callback) {
+        // todo: allow multiple listeners
         this.#onMessage = callback;
     }
 }

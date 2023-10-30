@@ -13,8 +13,7 @@ describe('RemoteController', function () {
             messageServer = new MessageServer({server: createServer()}),
             messageClient = new MessageClient({host: 'localhost'});
 
-        messageServer.listen(state => state.controller = controller);
-        messageServer.onMessage(RemoteController.handleMessage);
+        RemoteController.server(messageServer, controller);
 
         new RemoteController(messageClient).call('add', [5, 7]).then(result => {
             expect(result).to.equal(12);

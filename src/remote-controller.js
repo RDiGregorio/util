@@ -34,23 +34,21 @@ export class RemoteController {
         });
     }
 
-    /**
-     * Passed to `onMessage` on a server side `MessageServer`.
-     * @param {any} state
-     * @param {function(message: any): void} send
-     * @param {string} message
-     */
+    static server(messageServer, controller) {
+        // todo: make listen optional
+        messageServer.listen(() => undefined);
 
-    static handleMessage(state, send, message) {
-        let type, id, key, values;
+        messageServer.onMessage((state, send, message) => {
+            let type, id, key, values;
 
-        try {
-            [type, id, key, values] = message
-        } catch (error) {
-            return;
-        }
+            try {
+                [type, id, key, values] = message
+            } catch (error) {
+                return;
+            }
 
-        if (type === '__call__') send(['__call__', id, state.controller[key](...values)]);
+            if (type === '__call__') send(['__call__', id, controller[key](...values)]);
+        });
     }
 
     /**
