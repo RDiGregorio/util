@@ -14,7 +14,6 @@ describe('RemoteModel', function () {
                 reviver: createMapReviver([ObservableMap])
             }),
             messageClient = new MessageClient({
-                host: 'localhost',
                 replacer: mapReplacer,
                 reviver: createMapReviver([ObservableMap])
             });
