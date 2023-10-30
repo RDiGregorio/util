@@ -60,7 +60,7 @@ export class RemoteModel {
      */
 
     static server(messageServer, observableMap) {
-        messageServer.onConnection((state, send) => {
+        messageServer.onConnection(send => {
             send(['__update__', 'update', [], observableMap]);
 
             const cancel = observableMap.addEventListener((type, path, value) => {

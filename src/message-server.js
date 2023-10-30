@@ -31,7 +31,7 @@ export class MessageServer {
             this.#onError.forEach(callback => callback(error));
         }
 
-        const webSocketServer = new WebSocketServer({server: server});
+        const webSocketServer = new WebSocketServer({server});
         webSocketServer.on('error', handleError);
         webSocketServer.on('wsClientError', handleError);
 
@@ -40,12 +40,11 @@ export class MessageServer {
             const send = message => void webSocket.send(JSON.stringify(message, this.#replacer))
 
             try {
-                const state = {};
-                this.#onConnection.forEach(callback => callback(state, send, request));
-                webSocket.on('close', () => this.#onClose.forEach(callback => callback(state)));
+                this.#onConnection.forEach(callback => callback(send, request));
+                webSocket.on('close', () => this.#onClose.forEach(callback => callback()));
 
                 webSocket.on('message', message =>
-                    this.#onMessage.forEach(callback => callback(state, send, JSON.parse(message, this.#reviver)))
+                    this.#onMessage.forEach(callback => callback(send, JSON.parse(message, this.#reviver)))
                 );
 
             } catch (error) {
@@ -66,7 +65,7 @@ export class MessageServer {
 
     /**
      * Handles a closed connection.
-     * @param {function(state: any): void} callback
+     * @param {function(): void} callback
      */
 
     onClose(callback) {
@@ -75,7 +74,7 @@ export class MessageServer {
 
     /**
      * Handles a new connection.
-     * @param {function(state: any, send: function(message: any): void, request: IncomingMessage): void} [callback]
+     * @param {function(send: function(message: any): void, request: IncomingMessage): void} [callback]
      */
 
     onConnection(callback) {
@@ -93,7 +92,7 @@ export class MessageServer {
 
     /**
      * Receives a message.
-     * @param {function(state: any, send: function(message: any): void, message: any): void} callback
+     * @param {function(send: function(message: any): void, message: any): void} callback
      */
 
     onMessage(callback) {

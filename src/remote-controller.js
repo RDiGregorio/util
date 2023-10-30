@@ -50,7 +50,7 @@ export class RemoteController {
      */
 
     static server(messageServer, controller) {
-        messageServer.onMessage((state, send, message) => {
+        messageServer.onMessage((send, message) => {
             let type, id, key, values;
 
             try {
