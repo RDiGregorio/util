@@ -38,7 +38,7 @@ export class MessageClient {
     }
 
     /**
-     * Handles "close" events.
+     * Handles a closed connection.
      * @param {function(): void} callback
      */
 
@@ -47,7 +47,7 @@ export class MessageClient {
     }
 
     /**
-     * Handles "error" events.
+     * Handles errors.
      * @param {function(error: any): void} callback
      */
 

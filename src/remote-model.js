@@ -2,7 +2,7 @@ import {ObservableMap} from './observable-map.js';
 import {createPromise} from './async.js';
 
 /**
- * TODO
+ * A server side `ObservableMap` that can be viewed by a client.
  */
 
 export class RemoteModel {

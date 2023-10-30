@@ -14,8 +14,8 @@ export class MessageServer {
     #server;
 
     /**
-     * Creates a new `MessageServer` from an HTTP or HTTPS server.
-     * @param {any} server
+     * Creates a new `MessageServer` from a `Server`.
+     * @param {Server} server
      * @param {number} [port = 8080]
      * @param {function(key: number|string, value: any): any} [replacer]
      * @param {function(key: number|string, value: any): any} [reviver]
@@ -65,7 +65,7 @@ export class MessageServer {
     }
 
     /**
-     * Handles "close" events from connections.
+     * Handles a closed connection.
      * @param {function(state: any): void} callback
      */
 
@@ -74,8 +74,8 @@ export class MessageServer {
     }
 
     /**
-     * Handles "connection" events from connections.
-     * @param {function(state: any, send: function(message: any): void, request: any): void} [callback]
+     * Handles a new connection.
+     * @param {function(state: any, send: function(message: any): void, request: IncomingMessage): void} [callback]
      */
 
     onConnection(callback) {
@@ -83,7 +83,7 @@ export class MessageServer {
     }
 
     /**
-     * Handles "error" events.
+     * Handles errors.
      * @param {function(error: any): void} callback
      */
 
@@ -92,7 +92,7 @@ export class MessageServer {
     }
 
     /**
-     * Handles "message" events from connections.
+     * Receives a message.
      * @param {function(state: any, send: function(message: any): void, message: any): void} callback
      */
 

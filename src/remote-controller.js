@@ -1,7 +1,7 @@
 import {createPromise} from './async.js';
 
 /**
- * TODO
+ * A server side object with functions that can be called by a client.
  */
 
 export class RemoteController {
