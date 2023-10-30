@@ -44,22 +44,26 @@ export class RemoteController {
     }
 
     /**
-     * Sets the server side controller.
+     * Creates the server side controller.
      * @param {MessageServer} messageServer
-     * @param {any} controller
+     * @param {function(request: IncomingMessage): any} callback
      */
 
-    static server(messageServer, controller) {
-        messageServer.onMessage((send, message) => {
-            let type, id, key, values;
+    static server(messageServer, callback) {
+        messageServer.onConnection(request => {
+            const controller = callback(request);
 
-            try {
-                [type, id, key, values] = message
-            } catch (error) {
-                return;
-            }
+            messageServer.onMessage((send, message) => {
+                let type, id, key, values;
 
-            if (type === '__call__') send(['__call__', id, controller[key](...values)]);
+                try {
+                    [type, id, key, values] = message
+                } catch (error) {
+                    return;
+                }
+
+                if (type === '__call__') send(['__call__', id, controller[key](...values)]);
+            });
         });
     }
 }

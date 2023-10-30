@@ -12,7 +12,7 @@ describe('RemoteController', function () {
             messageServer = new MessageServer({server: createServer()}),
             messageClient = new MessageClient({});
 
-        RemoteController.server(messageServer, {add: (left, right) => left + right});
+        RemoteController.server(messageServer, () => ({add: (left, right) => left + right}));
 
         RemoteController.client(messageClient).add(5, 7).then(result => {
             expect(result).to.equal(12);
