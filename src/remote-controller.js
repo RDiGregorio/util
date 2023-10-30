@@ -54,7 +54,7 @@ export class RemoteController {
     }
 
     /**
-     * Calls a server side function. Use client side.
+     * Calls a function on a remote object. Use client side.
      * @param {string} key
      * @param {any[]} values
      * @return {Promise<any>}

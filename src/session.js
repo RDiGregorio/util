@@ -11,6 +11,8 @@ export class Session {
         const messageServer = new MessageServer({server, replacer, reviver});
         messageServer.listen(send => ({controller: createController(RemoteModel.server(send)), send}));
         messageServer.onMessage(RemoteController.handle);
+
+        // returns functions to close?
     }
 
     static client({host, port, secure, replacer, reviver}) {
