@@ -54,13 +54,14 @@ export class RemoteModel {
     }
 
     /**
-     * Sets the server side model.
+     * Creates the server side model.
      * @param {MessageServer} messageServer
-     * @param {ObservableMap} observableMap
+     * @param {function(request: IncomingMessage): ObservableMap} callback
      */
 
-    static server(messageServer, observableMap) {
-        messageServer.onConnection(send => {
+    static server(messageServer, callback) {
+        messageServer.onConnection((send, request) => {
+            const observableMap = callback(request);
             send(['__update__', 'update', [], observableMap]);
 
             const cancel = observableMap.addEventListener((type, path, value) => {

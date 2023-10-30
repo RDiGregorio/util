@@ -20,7 +20,7 @@ describe('RemoteModel', function () {
             });
 
         const serverModel = new ObservableMap();
-        RemoteModel.server(messageServer, serverModel);
+        RemoteModel.server(messageServer, () => serverModel);
         serverModel.set('a', new ObservableMap([['b', 0]]));
 
         RemoteModel.client(messageClient).then(clientModel => {
