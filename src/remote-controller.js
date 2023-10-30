@@ -35,13 +35,13 @@ export class RemoteController {
     }
 
     /**
+     * TODO
      * @param {MessageServer} messageServer
      * @param {any} controller
      */
 
     static server(messageServer, controller) {
-        // todo: make listen optional
-        messageServer.listen(() => undefined);
+        messageServer.listen();
 
         messageServer.onMessage((state, send, message) => {
             let type, id, key, values;

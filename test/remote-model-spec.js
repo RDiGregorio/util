@@ -19,21 +19,16 @@ describe('RemoteModel', function () {
                 reviver: createMapReviver([ObservableMap])
             });
 
-        messageServer.listen();
-        let serverObservableMap;
+        RemoteModel.server(messageServer).then(serverModel => {
+            serverModel.set('a', new ObservableMap([['b', 0]]));
+            const clientModel = RemoteModel.client(messageClient);
 
-        messageServer.onConnection((state, send) => {
-            serverObservableMap = RemoteModel.server(send);
-            serverObservableMap.set('a', new ObservableMap([['b', 0]]));
-        });
-
-        const clientObservableMap = RemoteModel.client(messageClient);
-
-        clientObservableMap.addEventListener(() => {
-            expect(clientObservableMap).to.eql(serverObservableMap);
-            messageClient.close();
-            messageServer.close();
-            done();
+            clientModel.addEventListener(() => {
+                expect(serverModel).to.eql(clientModel);
+                messageClient.close();
+                messageServer.close();
+                done();
+            });
         });
     });
 });

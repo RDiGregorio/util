@@ -1,4 +1,5 @@
 import {ObservableMap} from './observable-map.js';
+import {createPromise} from './async.js';
 
 /**
  * A client side `ObservableMap` that copies a server side `ObservableMap`.
@@ -52,24 +53,30 @@ export class RemoteModel {
     }
 
     /**
-     * Returns the server side model.
-     * @param {function(message: any): void} send
-     * @return {ObservableMap}
+     * TODO
+     * @param {MessageServer} messageServer
+     * @return {Promise<ObservableMap>}
      */
 
-    static server(send) {
-        const observableMap = new ObservableMap();
-        send(['__update__', 'update', [], observableMap]);
+    static server(messageServer) {
+        messageServer.listen();
+        const [promise, resolve] = createPromise();
 
-        const cancel = observableMap.addEventListener((type, path, value) => {
-            try {
-                send(['__update__', type, path, value]);
-            } catch (error) {
-                console.log(error);
-                cancel();
-            }
+        messageServer.onConnection((state, send) => {
+            const observableMap = new ObservableMap();
+            send(['__update__', 'update', [], observableMap]);
+
+            const cancel = observableMap.addEventListener((type, path, value) => {
+                try {
+                    send(['__update__', type, path, value]);
+                } catch (error) {
+                    cancel();
+                }
+            });
+
+            resolve(observableMap);
         });
 
-        return observableMap;
+        return promise;
     }
 }
