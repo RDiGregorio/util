@@ -35,13 +35,13 @@ export class RemoteController {
     }
 
     /**
-     * Handles calls. Used server side.
+     * Passed to `onMessage` on a server side `MessageServer`.
      * @param {any} state
      * @param {function(message: any): void} send
      * @param {string} message
      */
 
-    static handle(state, send, message) {
+    static handleMessage(state, send, message) {
         let type, id, key, values;
 
         try {

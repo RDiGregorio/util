@@ -5,6 +5,8 @@ import {MessageClient} from '../src/message-client.js';
 import {MessageServer} from '../src/message-server.js';
 
 describe('RemoteController', function () {
+    const server = createServer();
+
     it('can call remote functions', function (done) {
         const
             controller = {add: (left, right) => left + right},
@@ -12,7 +14,7 @@ describe('RemoteController', function () {
             messageClient = new MessageClient({host: 'localhost'});
 
         messageServer.listen(state => state.controller = controller);
-        messageServer.onMessage(RemoteController.handle);
+        messageServer.onMessage(RemoteController.handleMessage);
 
         new RemoteController(messageClient).call('add', [5, 7]).then(result => {
             expect(result).to.equal(12);
