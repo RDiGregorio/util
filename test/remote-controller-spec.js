@@ -17,6 +17,6 @@ describe('RemoteController', function () {
             messageServer.close();
             messageClient.close();
             done();
-        })
+        });
     });
 });
