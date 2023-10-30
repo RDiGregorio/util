@@ -35,7 +35,7 @@ export class MultiMap {
 
     delete(key, value) {
         if (!this.#map.has(key)) return false;
-        if (arguments.length === 1) return this.#map.delete(key);
+        if (arguments.length <= 1) return this.#map.delete(key);
         const array = this.#map.get(key), result = array.includes(value);
         if (result) array.splice(array.indexOf(value), 1);
         if (this.#map.get(key).length === 0) this.#map.delete(key);

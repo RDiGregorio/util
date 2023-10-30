@@ -9,7 +9,7 @@ describe('MessageServer', function () {
             messageServer = new MessageServer({server: createServer()}),
             messageClient = new MessageClient({host: 'localhost'});
 
-        messageServer.listen(() => undefined);
+        messageServer.listen();
         messageServer.onMessage((state, send, message) => send(message));
 
         messageClient.onMessage(message => {

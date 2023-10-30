@@ -12,16 +12,19 @@ export class MessageServer {
     #reviver;
     #server;
     #webSocketServer;
+    #port;
 
     /**
      * Creates a new `MessageServer` from an HTTP or HTTPS server.
      * @param {any} server
+     * @param {number} [port = 8080]
      * @param {function(key: number|string, value: any): any} [replacer]
      * @param {function(key: number|string, value: any): any} [reviver]
      */
 
-    constructor({server, replacer, reviver}) {
+    constructor({server, port = 8080, replacer, reviver}) {
         this.#server = server;
+        this.#port = port;
         this.#webSocketServer = new WebSocketServer({server: server});
         this.#replacer = replacer;
         this.#reviver = reviver;
@@ -37,11 +40,10 @@ export class MessageServer {
 
     /**
      * Listens for new connections.
-     * @param {function(state: any, send: function(message: any): void, request: any): void} callback
-     * @param {number} [port = 8080]
+     * @param {function(state: any, send: function(message: any): void, request: any): void} [callback]
      */
 
-    listen(callback, port = 8080) {
+    listen(callback) {
         const handleError = (error) => {
             if (this.#onError.length === 0) throw error;
             this.#onError.forEach(callback => callback(error));
@@ -56,7 +58,7 @@ export class MessageServer {
 
             try {
                 const state = {};
-                callback(state, send, request);
+                if (arguments.length >= 1) callback(state, send, request);
                 webSocket.on('close', () => this.#onClose.forEach(callback => callback(state)));
 
                 webSocket.on('message', message =>
@@ -68,7 +70,7 @@ export class MessageServer {
             }
         });
 
-        this.#server.listen(port);
+        this.#server.listen(this.#port);
     }
 
     /**

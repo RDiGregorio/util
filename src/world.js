@@ -63,7 +63,7 @@ export class World {
     delete(value, x, y) {
         const result = this.#coordinates.has(value);
 
-        if (arguments.length === 1) {
+        if (arguments.length <= 1) {
             [...this.#coordinates.get(value)].forEach(array => {
                 this.#coordinates.delete(value, array);
                 this.delete(value, array[0], array[1]);
