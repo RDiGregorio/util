@@ -33,6 +33,6 @@ describe('RemoteModel', function () {
             messageClient.close();
             messageServer.close();
             done();
-        })
+        });
     });
 });

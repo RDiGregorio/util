@@ -9,11 +9,10 @@ describe('RemoteController', function () {
 
     it('can call remote functions', function (done) {
         const
-            controller = {add: (left, right) => left + right},
             messageServer = new MessageServer({server: createServer()}),
-            messageClient = new MessageClient({host: 'localhost'});
+            messageClient = new MessageClient({});
 
-        RemoteController.server(messageServer, controller);
+        RemoteController.server(messageServer, {add: (left, right) => left + right});
 
         new RemoteController(messageClient).call('add', [5, 7]).then(result => {
             expect(result).to.equal(12);
