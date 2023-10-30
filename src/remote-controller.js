@@ -24,7 +24,7 @@ export class RemoteController {
                 return;
             }
 
-            if (type === '__call__') {
+            if (type === '__controller__') {
                 const resolve = callbacks.get(path);
                 callbacks.delete(path);
                 resolve(value);
@@ -36,7 +36,7 @@ export class RemoteController {
                 return (...values) => {
                     const id = count++, [promise, resolve] = createPromise();
                     callbacks.set(id, resolve);
-                    messageClient.send(['__call__', id, key, values]);
+                    messageClient.send(['__controller__', id, key, values]);
                     return promise;
                 }
             },
@@ -62,7 +62,7 @@ export class RemoteController {
                     return;
                 }
 
-                if (type === '__call__') send(['__call__', id, controller[key](...values)]);
+                if (type === '__controller__') send(['__controller__', id, controller[key](...values)]);
             });
         });
     }

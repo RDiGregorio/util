@@ -25,7 +25,7 @@ export class RemoteModel {
                 return;
             }
 
-            if (messageType === '__update__') {
+            if (messageType === '__model__') {
                 if (eventType === 'delete') {
                     path = [...path];
                     const key = path.pop(), source = path.reduce((result, key) => result.get(key), observableMap);
@@ -62,11 +62,11 @@ export class RemoteModel {
     static server(messageServer, callback) {
         messageServer.onConnection((send, request) => {
             const observableMap = callback(request);
-            send(['__update__', 'update', [], observableMap]);
+            send(['__model__', 'update', [], observableMap]);
 
             const cancel = observableMap.addEventListener((type, path, value) => {
                 try {
-                    send(['__update__', type, path, value]);
+                    send(['__model__', type, path, value]);
                 } catch (error) {
                     cancel();
                 }
