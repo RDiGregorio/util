@@ -39,7 +39,7 @@ export class RemoteController {
                     messageClient.send(['__controller__', id, key, values]);
                     return promise;
                 }
-            },
+            }
         });
     }
 
