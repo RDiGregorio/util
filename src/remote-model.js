@@ -59,7 +59,6 @@ export class RemoteModel {
      */
 
     static server(messageServer) {
-        messageServer.listen();
         const [promise, resolve] = createPromise();
 
         messageServer.onConnection((state, send) => {

@@ -41,8 +41,6 @@ export class RemoteController {
      */
 
     static server(messageServer, controller) {
-        messageServer.listen();
-
         messageServer.onMessage((state, send, message) => {
             let type, id, key, values;
 

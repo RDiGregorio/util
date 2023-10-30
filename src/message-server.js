@@ -12,8 +12,6 @@ export class MessageServer {
     #replacer;
     #reviver;
     #server;
-    #webSocketServer;
-    #port;
 
     /**
      * Creates a new `MessageServer` from an HTTP or HTTPS server.
@@ -25,34 +23,19 @@ export class MessageServer {
 
     constructor({server, port = 8080, replacer, reviver}) {
         this.#server = server;
-        this.#port = port;
-        this.#webSocketServer = new WebSocketServer({server: server});
         this.#replacer = replacer;
         this.#reviver = reviver;
-    }
 
-    /**
-     * Stops listening for new connections and closes all existing connections.
-     */
-
-    close() {
-        this.#server.close();
-    }
-
-    /**
-     * Listens for new connections.
-     */
-
-    listen() {
         const handleError = (error) => {
             if (this.#onError.length === 0) throw error;
             this.#onError.forEach(callback => callback(error));
         }
 
-        this.#webSocketServer.on('error', handleError);
-        this.#webSocketServer.on('wsClientError', handleError);
+        const webSocketServer = new WebSocketServer({server: server});
+        webSocketServer.on('error', handleError);
+        webSocketServer.on('wsClientError', handleError);
 
-        this.#webSocketServer.on('connection', (webSocket, request) => {
+        webSocketServer.on('connection', (webSocket, request) => {
             webSocket.on('error', handleError);
             const send = message => void webSocket.send(JSON.stringify(message, this.#replacer))
 
@@ -70,7 +53,15 @@ export class MessageServer {
             }
         });
 
-        this.#server.listen(this.#port);
+        this.#server.listen(port);
+    }
+
+    /**
+     * Stops listening for new connections and closes all existing connections.
+     */
+
+    close() {
+        this.#server.close();
     }
 
     /**
