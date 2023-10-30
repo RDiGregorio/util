@@ -21,7 +21,7 @@ describe('RemoteModel', function () {
 
         let serverObservableMap;
 
-        messageServer.listen(send => {
+        messageServer.listen((state, send) => {
             serverObservableMap = RemoteModel.server(send);
             serverObservableMap.set('a', new ObservableMap([['b', 0]]));
         });

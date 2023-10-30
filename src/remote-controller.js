@@ -36,12 +36,12 @@ export class RemoteController {
 
     /**
      * Handles calls. Used server side.
-     * @param {any} controller
+     * @param {any} state
      * @param {function(message: any): void} send
      * @param {string} message
      */
 
-    static handle({controller, send}, message) {
+    static handle(state, send, message) {
         let type, id, key, values;
 
         try {
@@ -50,7 +50,7 @@ export class RemoteController {
             return;
         }
 
-        if (type === '__call__') send(['__call__', id, controller[key](...values)]);
+        if (type === '__call__') send(['__call__', id, state.controller[key](...values)]);
     }
 
     /**

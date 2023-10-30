@@ -36,8 +36,8 @@ export class MessageServer {
     }
 
     /**
-     * Listens for new connections. The value returned by `callback` is passed to "close" and "message" event handlers.
-     * @param {function(function(message: any): void, request: any): any} callback
+     * Listens for new connections.
+     * @param {function(state: any, send: function(message: any): void, request: any): void} callback
      * @param {number} [port = 8080]
      */
 
@@ -60,11 +60,12 @@ export class MessageServer {
             }
 
             try {
-                const state = callback(send, request);
+                const state = {};
+                callback(state, send, request);
                 webSocket.on('close', () => (this.#onClose ?? ignore)(state));
 
                 webSocket.on('message', message =>
-                    (this.#onMessage ?? ignore)(state, JSON.parse(message, this.#reviver))
+                    (this.#onMessage ?? ignore)(state, send, JSON.parse(message, this.#reviver))
                 );
 
             } catch (error) {
@@ -95,7 +96,7 @@ export class MessageServer {
 
     /**
      * Handles "message" events from connections.
-     * @param {function(state: any, message: any): void} callback
+     * @param {function(state: any, send: function(message: any): void, message: any): void} callback
      */
 
     onMessage(callback) {

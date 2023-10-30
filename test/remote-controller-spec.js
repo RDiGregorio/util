@@ -11,7 +11,7 @@ describe('RemoteController', function () {
             messageServer = new MessageServer({server: createServer()}),
             messageClient = new MessageClient({host: 'localhost'});
 
-        messageServer.listen(send => ({controller, send}));
+        messageServer.listen(state => state.controller = controller);
         messageServer.onMessage(RemoteController.handle);
 
         new RemoteController(messageClient).call('add', [5, 7]).then(result => {

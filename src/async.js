@@ -1,6 +1,6 @@
 /**
  * Returns a [promise, resolve, reject] array.
- * @return {[Promise, function(value?: any): void, function(value?: any): void]}
+ * @return {[Promise<any>, function(value?: any): void, function(value?: any): void]}
  */
 
 export function createPromise() {
