@@ -7,7 +7,7 @@ import {RemoteModel} from '../src/remote-model.js';
 import {createMapReviver, mapReplacer} from '../src/json.js';
 
 describe('RemoteModel', function () {
-    it('can copy a remote object', function (done) {
+    it('can view a remote object', function (done) {
         const messageServer = new MessageServer({
                 server: createServer(),
                 replacer: mapReplacer,
