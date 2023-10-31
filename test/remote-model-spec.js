@@ -51,12 +51,13 @@ describe('RemoteModel', function () {
         RemoteModel.server(messageServer, () => serverModel);
         RemoteController.server(messageServer, () => serverController);
 
-        RemoteController.client(messageClient).add(5, 7).then(result => {
-            expect(result).to.equal(12);
-            serverModel.set('a', new ObservableMap([['b', 0]]));
+        // The model needs to connect before the controller.
 
-            RemoteModel.client(messageClient).then(clientModel => {
-                expect(serverModel).to.eql(clientModel);
+        RemoteModel.client(messageClient).then(clientModel => {
+            expect(serverModel).to.eql(clientModel);
+
+            RemoteController.client(messageClient).add(5, 7).then(result => {
+                expect(result).to.equal(12);
                 serverModel.set('c', new ObservableMap([['d', 0]]));
 
                 clientModel.addEventListener(() => {
