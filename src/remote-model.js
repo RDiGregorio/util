@@ -13,6 +13,7 @@ export class RemoteModel {
      */
 
     static client(messageClient) {
+        messageClient.send(['__model__']);
         const [promise, resolve] = createPromise();
         let observableMap;
 
@@ -62,7 +63,18 @@ export class RemoteModel {
     static server(messageServer, callback) {
         messageServer.onConnection((send, request) => {
             const observableMap = callback(request);
-            send(['__model__', 'update', [], observableMap]);
+
+            messageServer.onMessage((send, message) => {
+                let type;
+
+                try {
+                    [type] = message;
+                } catch (error) {
+                    return;
+                }
+
+                if (type === '__model__') send(['__model__', 'update', [], observableMap]);
+            });
 
             const cancel = observableMap.addEventListener((type, path, value) => {
                 try {
