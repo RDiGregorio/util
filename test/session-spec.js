@@ -5,7 +5,7 @@ import {createMapReviver, mapReplacer} from '../src/json.js';
 import {ObservableMap} from '../src/observable-map.js';
 import {MessageClient} from '../src/message-client.js';
 import {Session} from '../src/session.js';
-import {createPromise} from "../src/async.js";
+import {createPromise} from '../src/async.js';
 
 describe('Session', function () {
     it('creates remote models and remote controllers', function (done) {
