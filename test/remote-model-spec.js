@@ -5,7 +5,7 @@ import {MessageServer} from '../src/message-server.js';
 import {MessageClient} from '../src/message-client.js';
 import {RemoteModel} from '../src/remote-model.js';
 import {createMapReviver, mapReplacer} from '../src/json.js';
-import {RemoteController} from "../src/remote-controller.js";
+import {RemoteController} from '../src/remote-controller.js';
 
 describe('RemoteModel', function () {
     it('can view a remote object', function (done) {
