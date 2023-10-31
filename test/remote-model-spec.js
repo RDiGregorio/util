@@ -51,8 +51,6 @@ describe('RemoteModel', function () {
         RemoteModel.server(messageServer, () => serverModel);
         RemoteController.server(messageServer, () => serverController);
 
-        // The model needs to connect before the controller.
-
         RemoteModel.client(messageClient).then(clientModel => {
             expect(serverModel).to.eql(clientModel);
 
