@@ -4,7 +4,8 @@ import {MessageServer} from '../src/message-server.js';
 import {createMapReviver, mapReplacer} from '../src/json.js';
 import {ObservableMap} from '../src/observable-map.js';
 import {MessageClient} from '../src/message-client.js';
-import {Session} from "../src/session.js";
+import {Session} from '../src/session.js';
+import {createPromise} from "../src/async.js";
 
 describe('Session', function () {
     it('TODO', function (done) {
@@ -19,16 +20,22 @@ describe('Session', function () {
             });
 
         function createModel() {
-            return new ObservableMap([['value', 5]]);
+            const [promise, resolve] = createPromise();
+            resolve(new ObservableMap([['value', 5]]));
+            return promise;
         }
 
         function createController(model) {
-            return {
+            const [promise, resolve] = createPromise();
+
+            resolve({
                 add: (value) => {
                     model.set('value', model.get('value') + value);
                     return model.get('value');
                 }
-            };
+            });
+
+            return promise;
         }
 
         Session.server({messageServer, createModel, createController});
