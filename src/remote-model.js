@@ -57,12 +57,12 @@ export class RemoteModel {
     /**
      * Creates the server side model.
      * @param {MessageServer} messageServer
-     * @param {function(request: IncomingMessage): ObservableMap} callback
+     * @param {function(connectionInfo: {id: number, ip: string}): ObservableMap} callback
      */
 
     static server(messageServer, callback) {
-        messageServer.onConnection((send, request) => {
-            const observableMap = callback(request);
+        messageServer.onConnection((send, connectionInfo) => {
+            const observableMap = callback(connectionInfo);
 
             messageServer.onMessage((send, message) => {
                 let type;

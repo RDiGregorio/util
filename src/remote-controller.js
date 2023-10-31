@@ -46,12 +46,12 @@ export class RemoteController {
     /**
      * Creates the server side controller.
      * @param {MessageServer} messageServer
-     * @param {function(request: IncomingMessage): any} callback
+     * @param {function(connectionInfo: {id: number, ip: string}): any} callback
      */
 
     static server(messageServer, callback) {
-        messageServer.onConnection(request => {
-            const controller = callback(request);
+        messageServer.onConnection((send, connectionInfo) => {
+            const controller = callback(connectionInfo);
 
             messageServer.onMessage((send, message) => {
                 let type, id, key, values;

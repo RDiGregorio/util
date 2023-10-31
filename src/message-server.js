@@ -25,29 +25,32 @@ export class MessageServer {
         this.#server = server;
         this.#replacer = replacer;
         this.#reviver = reviver;
+        let count = 0;
 
-        const handleError = (error) => {
+        const handleError = (error, connectionInfo) => {
             if (this.#onError.length === 0) throw error;
-            this.#onError.forEach(callback => callback(error));
+            this.#onError.forEach(callback => callback(error, connectionInfo));
         }
 
         const webSocketServer = new WebSocketServer({server});
-        webSocketServer.on('error', handleError);
-        webSocketServer.on('wsClientError', handleError);
+        webSocketServer.on('error', error => handleError(error));
+        webSocketServer.on('wsClientError', error => handleError(error));
 
         webSocketServer.on('connection', (webSocket, request) => {
+            const connectionInfo = {id: count++, ip: request.socket.remoteAddress};
+
             webSocket.on('error', handleError);
-            const send = message => void webSocket.send(JSON.stringify(message, this.#replacer))
+            const send = message => void webSocket.send(JSON.stringify(message, this.#replacer));
 
             try {
-                this.#onConnection.forEach(callback => callback(send, request));
-                webSocket.on('close', () => this.#onClose.forEach(callback => callback()));
+                this.#onConnection.forEach(callback => callback(send, connectionInfo));
+                webSocket.on('close', () => this.#onClose.forEach(callback => callback(connectionInfo)));
 
                 webSocket.on('message', message =>
                     this.#onMessage.forEach(callback => callback(send, JSON.parse(message, this.#reviver)))
                 );
             } catch (error) {
-                handleError(error);
+                handleError(error, connectionInfo);
             }
         });
 
@@ -64,7 +67,7 @@ export class MessageServer {
 
     /**
      * Handles a closed connection.
-     * @param {function(): void} callback
+     * @param {function(connectionInfo: {id: number, ip: string}): void} callback
      */
 
     onClose(callback) {
@@ -73,7 +76,7 @@ export class MessageServer {
 
     /**
      * Handles a new connection.
-     * @param {function(send: function(message: any): void, request: IncomingMessage): void} [callback]
+     * @param {function(send: function(message: any): void, connectionInfo: {id: number, ip: string}): void} [callback]
      */
 
     onConnection(callback) {
@@ -82,7 +85,7 @@ export class MessageServer {
 
     /**
      * Handles errors.
-     * @param {function(error: any): void} callback
+     * @param {function(error: any, connectionInfo?: {id: number, ip: string}): void} callback
      */
 
     onError(callback) {
