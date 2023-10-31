@@ -2,7 +2,7 @@ import {RemoteModel} from './remote-model.js';
 import {RemoteController} from './remote-controller.js';
 
 /**
- * TODO
+ * Creates a server side model and controller that can be used by a client.
  */
 
 export class Session {

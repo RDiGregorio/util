@@ -8,7 +8,7 @@ import {Session} from '../src/session.js';
 import {createPromise} from "../src/async.js";
 
 describe('Session', function () {
-    it('TODO', function (done) {
+    it('creates remote models and remote controllers', function (done) {
         const messageServer = new MessageServer({
                 server: createServer(),
                 replacer: mapReplacer,
