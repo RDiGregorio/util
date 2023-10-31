@@ -15,14 +15,16 @@ export class Session {
     static server({messageServer, createModel, createController}) {
         const models = new Map();
 
-        RemoteModel.server(messageServer, connectionInfo =>
-            models.set(connectionInfo.id, createModel(connectionInfo))
-        );
+        RemoteModel.server(messageServer, connectionInfo => {
+            const model = createModel(connectionInfo);
+            models.set(connectionInfo.id, model);
+            return model;
+        });
 
         RemoteController.server(messageServer, async connectionInfo => {
             const model = models.get(connectionInfo.id);
             models.delete(connectionInfo.id);
-            createController(await model, connectionInfo);
+            return createController(await model, connectionInfo);
         });
     }
 
