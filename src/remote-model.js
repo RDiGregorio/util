@@ -42,8 +42,6 @@ export class RemoteModel {
 
                     path = [...path];
                     const key = path.pop(), source = path.reduce((result, key) => result.get(key), observableMap);
-                    console.log("@@@@@@@@@@@@")
-                    console.log([key, value]);
                     source.set(key, value);
                     return;
                 }
