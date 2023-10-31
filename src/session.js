@@ -1,18 +1,38 @@
 import {RemoteModel} from './remote-model.js';
 import {RemoteController} from './remote-controller.js';
 
+/**
+ * TODO
+ */
+
 export class Session {
-    // todo: need to think about the design here.
+    /**
+     * @param {MessageServer} messageServer
+     * @param {function(connectionInfo: {id: number, ip: string}): ObservableMap|Promise<ObservableMap>} createModel
+     * @param {function(model: ObservableMap, connectionInfo: {id: number, ip: string}): any} createController
+     */
 
     static server({messageServer, createModel, createController}) {
-        // todo: need to link the model and controller...
+        const models = new Map();
 
-        RemoteModel.server(messageServer, createModel);
-        RemoteController.server(messageServer, createController);
+        RemoteModel.server(messageServer, connectionInfo =>
+            models.set(connectionInfo.id, createModel(connectionInfo))
+        );
+
+        RemoteController.server(messageServer, async connectionInfo => {
+            const model = models.get(connectionInfo.id);
+            models.delete(connectionInfo.id);
+            createController(await model, connectionInfo);
+        });
     }
 
-    static client(messageClient) {
-        const model = RemoteModel.client(messageClient);
-        RemoteController.client(messageClient);
+    /**
+     * Promises a [model, controller] array.
+     * @param {MessageClient} messageClient
+     * @return {Promise<[ObservableMap, any]>}
+     */
+
+    static async client(messageClient) {
+        return [await RemoteModel.client(messageClient), RemoteController.client(messageClient)];
     }
 }
