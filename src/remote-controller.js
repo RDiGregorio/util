@@ -50,8 +50,8 @@ export class RemoteController {
      */
 
     static server(messageServer, callback) {
-        messageServer.onConnection((send, connectionInfo) => {
-            const controller = callback(connectionInfo);
+        messageServer.onConnection(async (send, connectionInfo) => {
+            const controller = await callback(connectionInfo);
 
             messageServer.onMessage((message, send) => {
                 let type, id, key, values;
