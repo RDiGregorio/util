@@ -46,9 +46,9 @@ export class MessageServer {
                 this.#onConnection.forEach(callback => callback(send, connectionInfo));
                 webSocket.on('close', () => this.#onClose.forEach(callback => callback(connectionInfo)));
 
-                webSocket.on('message', message =>
-                    this.#onMessage.forEach(callback => callback(send, JSON.parse(message, this.#reviver)))
-                );
+                webSocket.on('message', message => this.#onMessage.forEach(callback =>
+                    callback(JSON.parse(message, this.#reviver), send, connectionInfo)
+                ));
             } catch (error) {
                 handleError(error, connectionInfo);
             }
@@ -94,7 +94,9 @@ export class MessageServer {
 
     /**
      * Receives a message.
-     * @param {function(send: function(message: any): void, message: any): void} callback
+     * @param {
+     *     function(message: any, send: function(message: any): void, connectionInfo: {id: number, ip: string}): void
+     * } callback
      */
 
     onMessage(callback) {

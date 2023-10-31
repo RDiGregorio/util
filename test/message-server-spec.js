@@ -9,7 +9,7 @@ describe('MessageServer', function () {
             messageServer = new MessageServer({server: createServer()}),
             messageClient = new MessageClient({host: 'localhost'});
 
-        messageServer.onMessage((send, message) => send(message));
+        messageServer.onMessage((message, send) => send(message));
 
         messageClient.onMessage(message => {
             expect(message).to.equal('hello');
