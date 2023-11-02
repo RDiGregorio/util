@@ -27,7 +27,6 @@ export class MessageServer {
         this.#server = server;
         this.#replacer = replacer;
         this.#reviver = reviver;
-        let count = 0;
 
         const handleError = (error, messageConnection) => {
             if (this.#onError.length === 0) throw error;
@@ -44,7 +43,8 @@ export class MessageServer {
             const messageConnection = new MessageConnection({
                 ip: request.socket.remoteAddress,
                 send: message => webSocket.send(JSON.stringify(message, this.#replacer)),
-                close: webSocket.close
+                close: webSocket.close,
+                onClose: callback => webSocket.on('close', callback)
             });
 
             try {
@@ -75,7 +75,7 @@ export class MessageServer {
      * @param {function(messageConnection: MessageConnection): void} callback
      */
 
-    onClose(callback) {
+    onClose(callback) { // TODO: move this to the message connection
         this.#onClose.push(callback);
     }
 

@@ -5,6 +5,7 @@
 export class MessageConnection {
     #close;
     #ip;
+    #onClose;
     #send;
 
     /**
@@ -12,12 +13,14 @@ export class MessageConnection {
      * @param {string} ip
      * @param {function(message: any): void} send
      * @param {function(): void} close
+     * @param {function(function(): void): void} onClose
      */
 
-    constructor({ip, send, close}) {
+    constructor({ip, send, close, onClose}) {
         this.#ip = ip;
-        this.#close = close;
         this.#send = send;
+        this.#close = close;
+        this.#onClose = onClose;
     }
 
     /**
@@ -35,6 +38,15 @@ export class MessageConnection {
 
     close() {
         this.#close();
+    }
+
+    /**
+     * Handles a closed connection.
+     * @param {function(): void} callback
+     */
+
+    onClose(callback) {
+        this.#onClose(callback);
     }
 
     /**
