@@ -6,6 +6,7 @@ export class MessageConnection {
     #close;
     #ip;
     #onClose;
+    #onError;
     #onMessage;
     #send;
 
@@ -16,14 +17,16 @@ export class MessageConnection {
      * @param {function(): void} close
      * @param {function(function(): void): void} onClose
      * @param {function(function(message: any): void): void} onMessage
+     * @param {function(function(error: Error): void): void} onError
      */
 
-    constructor({ip, send, close, onClose, onMessage}) {
+    constructor({ip, send, close, onClose, onMessage, onError}) {
         this.#ip = ip;
         this.#send = send;
         this.#close = close;
         this.#onClose = onClose;
         this.#onMessage = onMessage;
+        this.#onError = onError;
     }
 
     /**
@@ -59,6 +62,15 @@ export class MessageConnection {
 
     onMessage(callback) {
         this.#onMessage(callback);
+    }
+
+    /**
+     * Handles errors.
+     * @param {function(error: Error): void} callback
+     */
+
+    onError(callback) {
+        this.#onError(callback);
     }
 
     /**

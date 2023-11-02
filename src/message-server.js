@@ -28,20 +28,26 @@ export class MessageServer {
         this.#webSocketServer = new WebSocketServer({server});
 
         this.#webSocketServer.on('connection', (webSocket, request) => {
+            function attempt(callback) {
+                try {
+                    callback();
+                } catch (error) {
+                    webSocket.emit('error', error);
+                }
+            }
+
             const messageConnection = new MessageConnection({
                 ip: request.socket.remoteAddress,
-
-                // todo: what if send or onMessage throw errors?
-
-                send: message => webSocket.send(JSON.stringify(message, this.#replacer)),
+                send: message => attempt(() => webSocket.send(JSON.stringify(message, this.#replacer))),
                 close: webSocket.close,
-                onClose: callback => webSocket.on('close', callback),
-                onMessage: callback => webSocket.on('message', message => callback(JSON.parse(message, this.#reviver)))
+                onClose: callback => webSocket.on('close', () => attempt(callback)),
+                onMessage: callback => webSocket.on('message', message => attempt(() =>
+                    callback(JSON.parse(message, this.#reviver))
+                )),
+                onError: callback => webSocket.on('error', error => callback(error))
             });
 
-            // todo: what about on connection errors?
-
-            this.#onConnection.forEach(callback => callback(messageConnection));
+            this.#onConnection.forEach(callback => attempt(() => callback(messageConnection)));
         });
 
         this.#server.listen(port);

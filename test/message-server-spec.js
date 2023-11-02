@@ -29,28 +29,24 @@ describe('MessageServer', function () {
         messageServer.close();
     });
 
-    // TODO
-    xit('handles errors', function (done) {
+    it('handles errors', function (done) {
         const
             messageServer = new MessageServer({server: createServer()}),
             messageClient = new MessageClient({});
 
         messageClient.send('hello');
-        //messageServer.close();
-        //done();
-        //return;
-        messageServer.onError(error => {
-            console.log("TEST@@@@@@@@@@@@@@@@@@@@@@@@@");
-            //expect(message).to.equal('hello');
-            console.log(error.message);
-            messageClient.close();
-            messageServer.close();
-            done();
-        });
 
-        messageServer.onMessage(message => {
-            console.log(message);
-            throw new Error(message);
+        messageServer.onConnection(messageConnection => {
+            messageConnection.onMessage(message => {
+                throw new Error(message);
+            });
+
+            messageConnection.onError(error => {
+                expect(error.message).to.equal('hello');
+                messageClient.close();
+                messageServer.close();
+                done();
+            });
         });
     });
 });
