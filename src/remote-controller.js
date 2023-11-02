@@ -46,14 +46,14 @@ export class RemoteController {
     /**
      * Creates the server side controller.
      * @param {MessageServer} messageServer
-     * @param {function(connectionInfo: {id: number, ip: string}): any} callback
+     * @param {function(messageConnection: MessageConnection): any} callback
      */
 
     static server(messageServer, callback) {
-        messageServer.onConnection(async (send, connectionInfo) => {
-            const controller = await callback(connectionInfo);
+        messageServer.onConnection(async messageConnection => {
+            const controller = await callback(messageConnection);
 
-            messageServer.onMessage((message, send) => {
+            messageServer.onMessage(message => {
                 let type, id, key, values;
 
                 try {
@@ -62,7 +62,8 @@ export class RemoteController {
                     return;
                 }
 
-                if (type === '__controller__') send(['__controller__', id, controller[key](...values)]);
+                if (type === '__controller__')
+                    messageConnection.send(['__controller__', id, controller[key](...values)]);
             });
         });
     }

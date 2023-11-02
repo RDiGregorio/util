@@ -8,23 +8,23 @@ import {RemoteController} from './remote-controller.js';
 export class Session {
     /**
      * @param {MessageServer} messageServer
-     * @param {function(connectionInfo: {id: number, ip: string}): ObservableMap|Promise<ObservableMap>} createModel
-     * @param {function(model: ObservableMap, connectionInfo: {id: number, ip: string}): any} createController
+     * @param {function(messageConnection: MessageConnection): ObservableMap|Promise<ObservableMap>} createModel
+     * @param {function(model: ObservableMap, messageConnection: MessageConnection): any} createController
      */
 
     static server({messageServer, createModel, createController}) {
         const models = new Map();
 
-        RemoteModel.server(messageServer, connectionInfo => {
-            const model = createModel(connectionInfo);
-            models.set(connectionInfo.id, model);
+        RemoteModel.server(messageServer, messageConnection => {
+            const model = createModel(messageConnection);
+            models.set(messageConnection, model);
             return model;
         });
 
-        RemoteController.server(messageServer, async connectionInfo => {
-            const model = models.get(connectionInfo.id);
-            models.delete(connectionInfo.id);
-            return createController(await model, connectionInfo);
+        RemoteController.server(messageServer, async messageConnection => {
+            const model = models.get(messageConnection);
+            models.delete(messageConnection);
+            return createController(await model, messageConnection);
         });
     }
 

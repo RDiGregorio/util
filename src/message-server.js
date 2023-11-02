@@ -1,5 +1,6 @@
 import {WebSocketServer} from 'ws';
-
+import {MessageConnection} from './message-connection.js';
+//TODO: some of the onclose/onerror stuff can be moved to the message connection
 /**
  * A server that can send and receive messages.
  */
@@ -27,9 +28,9 @@ export class MessageServer {
         this.#reviver = reviver;
         let count = 0;
 
-        const handleError = (error, connectionInfo) => {
+        const handleError = (error, messageConnection) => {
             if (this.#onError.length === 0) throw error;
-            this.#onError.forEach(callback => callback(error, connectionInfo));
+            this.#onError.forEach(callback => callback(error, messageConnection));
         }
 
         const webSocketServer = new WebSocketServer({server});
@@ -37,20 +38,23 @@ export class MessageServer {
         webSocketServer.on('wsClientError', error => handleError(error));
 
         webSocketServer.on('connection', (webSocket, request) => {
-            const connectionInfo = {id: count++, ip: request.socket.remoteAddress};
-
             webSocket.on('error', handleError);
-            const send = message => void webSocket.send(JSON.stringify(message, this.#replacer));
+
+            const messageConnection = new MessageConnection({
+                ip: request.socket.remoteAddress,
+                send: message => webSocket.send(JSON.stringify(message, this.#replacer)),
+                close: webSocket.close
+            });
 
             try {
-                this.#onConnection.forEach(callback => callback(send, connectionInfo));
-                webSocket.on('close', () => this.#onClose.forEach(callback => callback(connectionInfo)));
+                this.#onConnection.forEach(callback => callback(messageConnection));
+                webSocket.on('close', () => this.#onClose.forEach(callback => callback(messageConnection)));
 
                 webSocket.on('message', message => this.#onMessage.forEach(callback =>
-                    callback(JSON.parse(message, this.#reviver), send, connectionInfo)
+                    callback(JSON.parse(message, this.#reviver), messageConnection)
                 ));
             } catch (error) {
-                handleError(error, connectionInfo);
+                handleError(error, messageConnection);
             }
         });
 
@@ -67,7 +71,7 @@ export class MessageServer {
 
     /**
      * Handles a closed connection.
-     * @param {function(connectionInfo: {id: number, ip: string}): void} callback
+     * @param {function(messageConnection: MessageConnection): void} callback
      */
 
     onClose(callback) {
@@ -76,7 +80,7 @@ export class MessageServer {
 
     /**
      * Handles a new connection.
-     * @param {function(send: function(message: any): void, connectionInfo: {id: number, ip: string}): void} [callback]
+     * @param {function(messageConnection: MessageConnection): void} [callback]
      */
 
     onConnection(callback) {
@@ -85,7 +89,7 @@ export class MessageServer {
 
     /**
      * Handles errors.
-     * @param {function(error: any, connectionInfo?: {id: number, ip: string}): void} callback
+     * @param {function(error: any, messageConnection?: MessageConnection): void} callback
      */
 
     onError(callback) {
@@ -95,7 +99,7 @@ export class MessageServer {
     /**
      * Receives a message.
      * @param {
-     *     function(message: any, send: function(message: any): void, connectionInfo: {id: number, ip: string}): void
+     *     function(message: any, messageConnection: MessageConnection): void
      * } callback
      */
 

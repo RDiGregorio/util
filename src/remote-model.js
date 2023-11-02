@@ -57,14 +57,14 @@ export class RemoteModel {
     /**
      * Creates the server side model.
      * @param {MessageServer} messageServer
-     * @param {function(connectionInfo: {id: number, ip: string}): ObservableMap|Promise<ObservableMap>} callback
+     * @param {function(messageConnection: MessageConnection): ObservableMap|Promise<ObservableMap>} callback
      */
 
     static server(messageServer, callback) {
-        messageServer.onConnection(async (send, connectionInfo) => {
-            const observableMap = await callback(connectionInfo);
+        messageServer.onConnection(async messageConnection => {
+            const observableMap = await callback(messageConnection);
 
-            messageServer.onMessage((message, send) => {
+            messageServer.onMessage(message => {
                 let type;
 
                 try {
@@ -73,12 +73,12 @@ export class RemoteModel {
                     return;
                 }
 
-                if (type === '__model__') send(['__model__', 'update', [], observableMap]);
+                if (type === '__model__') messageConnection.send(['__model__', 'update', [], observableMap]);
             });
 
             const cancel = observableMap.addEventListener((type, path, value) => {
                 try {
-                    send(['__model__', type, path, value]);
+                    messageConnection.send(['__model__', type, path, value]);
                 } catch (error) {
                     cancel();
                 }

@@ -2,7 +2,7 @@
  * A connection between a `MessageServer` and a `MessageClient`.
  */
 
-class MessageConnection {
+export class MessageConnection {
     #close;
     #ip;
     #send;
@@ -10,11 +10,11 @@ class MessageConnection {
     /**
      * Creates a new `MessageConnection`.
      * @param {string} ip
+     * @param {function(message: any): void} send
      * @param {function(): void} close
-     * @param {function(message: string): void} send
      */
 
-    constructor({ip, close, send}) {
+    constructor({ip, send, close}) {
         this.#ip = ip;
         this.#close = close;
         this.#send = send;
@@ -39,7 +39,7 @@ class MessageConnection {
 
     /**
      * Sends a message from the server to the client.
-     * @param {string} message
+     * @param {any} message
      */
 
     send(message) {
