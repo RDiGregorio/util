@@ -20,4 +20,10 @@ describe('MessageServer', function () {
 
         messageClient.send('hello');
     });
+
+    it('handles close events', function (done) {
+        const messageServer = new MessageServer({server: createServer()});
+        messageServer.onClose(done);
+        messageServer.close();
+    });
 });

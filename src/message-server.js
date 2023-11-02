@@ -7,7 +7,6 @@ import {MessageConnection} from './message-connection.js';
  */
 
 export class MessageServer {
-    #onClose = [];
     #onConnection = [];
     #onError = [];
     #onMessage = [];
@@ -49,7 +48,6 @@ export class MessageServer {
 
             try {
                 this.#onConnection.forEach(callback => callback(messageConnection));
-                webSocket.on('close', () => this.#onClose.forEach(callback => callback(messageConnection)));
 
                 webSocket.on('message', message => this.#onMessage.forEach(callback =>
                     callback(JSON.parse(message, this.#reviver), messageConnection)
@@ -71,12 +69,12 @@ export class MessageServer {
     }
 
     /**
-     * Handles a closed connection.
-     * @param {function(messageConnection: MessageConnection): void} callback
+     * Handles a closed server.
+     * @param {function(): void} callback
      */
 
-    onClose(callback) { // TODO: move this to the message connection
-        this.#onClose.push(callback);
+    onClose(callback) {
+        this.#server.on('close', () => callback());
     }
 
     /**
