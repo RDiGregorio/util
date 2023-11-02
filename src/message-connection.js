@@ -65,7 +65,7 @@ export class MessageConnection {
     }
 
     /**
-     * Handles errors.
+     * Handles errors from the connection.
      * @param {function(error: Error): void} callback
      */
 
