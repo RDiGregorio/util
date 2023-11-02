@@ -64,7 +64,7 @@ export class RemoteModel {
         messageServer.onConnection(async messageConnection => {
             const observableMap = await callback(messageConnection);
 
-            messageServer.onMessage(message => {
+            messageConnection.onMessage(message => {
                 let type;
 
                 try {

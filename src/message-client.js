@@ -48,7 +48,7 @@ export class MessageClient {
 
     /**
      * Handles errors.
-     * @param {function(error: any): void} callback
+     * @param {function(error: Error): void} callback
      */
 
     onError(callback) {

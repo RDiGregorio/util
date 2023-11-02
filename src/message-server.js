@@ -8,10 +8,9 @@ import {MessageConnection} from './message-connection.js';
 
 export class MessageServer {
     #onConnection = [];
-    #onError = [];
-    #onMessage = [];
     #replacer;
     #reviver;
+    #webSocketServer;
     #server;
 
     /**
@@ -26,35 +25,24 @@ export class MessageServer {
         this.#server = server;
         this.#replacer = replacer;
         this.#reviver = reviver;
-
-        const handleError = (error) => {
-            if (this.#onError.length === 0) throw error;
-            this.#onError.forEach(callback => callback(error));
-        }
-
         const webSocketServer = new WebSocketServer({server});
-        webSocketServer.on('error', error => handleError(error));
-        webSocketServer.on('wsClientError', error => handleError(error));
+        this.#webSocketServer = webSocketServer;
 
         webSocketServer.on('connection', (webSocket, request) => {
-            webSocket.on('error', handleError);
-
             const messageConnection = new MessageConnection({
                 ip: request.socket.remoteAddress,
+
+                // todo: what if send or onMessage throw errors?
+
                 send: message => webSocket.send(JSON.stringify(message, this.#replacer)),
                 close: webSocket.close,
-                onClose: callback => webSocket.on('close', callback)
+                onClose: callback => webSocket.on('close', callback),
+                onMessage: callback => webSocket.on('message', message => callback(JSON.parse(message, this.#reviver)))
             });
 
-            webSocket.on('message', message => this.#onMessage.forEach(callback =>
-                callback(JSON.parse(message, this.#reviver), messageConnection)
-            ));
+            // todo: what about on connection errors?
 
-            try {
-                this.#onConnection.forEach(callback => callback(messageConnection));
-            } catch (error) {
-                handleError(error);
-            }
+            this.#onConnection.forEach(callback => callback(messageConnection));
         });
 
         this.#server.listen(port);
@@ -87,22 +75,12 @@ export class MessageServer {
     }
 
     /**
-     * Handles errors.
-     * @param {function(error: any): void} callback
+     * Handles server errors.
+     * @param {function(error: Error): void} callback
      */
 
     onError(callback) {
-        this.#onError.push(callback);
-    }
-
-    /**
-     * Receives a message. TODO: move this to the connection
-     * @param {
-     *     function(message: any, messageConnection: MessageConnection): void
-     * } callback
-     */
-
-    onMessage(callback) {
-        this.#onMessage.push(callback);
+        this.#webSocketServer.on('error', error => callback(error));
+        this.#webSocketServer.on('wsClientError', error => callback(error));
     }
 }

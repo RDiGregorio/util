@@ -53,7 +53,7 @@ export class RemoteController {
         messageServer.onConnection(async messageConnection => {
             const controller = await callback(messageConnection);
 
-            messageServer.onMessage(message => {
+            messageConnection.onMessage(message => {
                 let type, id, key, values;
 
                 try {
