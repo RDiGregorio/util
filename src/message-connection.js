@@ -43,6 +43,6 @@ export class MessageConnection {
      */
 
     send(message) {
-        this.#send();
+        this.#send(message);
     }
 }

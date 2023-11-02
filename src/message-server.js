@@ -1,5 +1,6 @@
 import {WebSocketServer} from 'ws';
 import {MessageConnection} from './message-connection.js';
+
 //TODO: some of the onclose/onerror stuff can be moved to the message connection
 /**
  * A server that can send and receive messages.
