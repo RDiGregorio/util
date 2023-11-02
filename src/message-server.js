@@ -25,10 +25,9 @@ export class MessageServer {
         this.#server = server;
         this.#replacer = replacer;
         this.#reviver = reviver;
-        const webSocketServer = new WebSocketServer({server});
-        this.#webSocketServer = webSocketServer;
+        this.#webSocketServer = new WebSocketServer({server});
 
-        webSocketServer.on('connection', (webSocket, request) => {
+        this.#webSocketServer.on('connection', (webSocket, request) => {
             const messageConnection = new MessageConnection({
                 ip: request.socket.remoteAddress,
 
