@@ -27,9 +27,9 @@ export class MessageServer {
         this.#replacer = replacer;
         this.#reviver = reviver;
 
-        const handleError = (error, messageConnection) => {
+        const handleError = (error) => {
             if (this.#onError.length === 0) throw error;
-            this.#onError.forEach(callback => callback(error, messageConnection));
+            this.#onError.forEach(callback => callback(error));
         }
 
         const webSocketServer = new WebSocketServer({server});
@@ -46,14 +46,14 @@ export class MessageServer {
                 onClose: callback => webSocket.on('close', callback)
             });
 
+            webSocket.on('message', message => this.#onMessage.forEach(callback =>
+                callback(JSON.parse(message, this.#reviver), messageConnection)
+            ));
+
             try {
                 this.#onConnection.forEach(callback => callback(messageConnection));
-
-                webSocket.on('message', message => this.#onMessage.forEach(callback =>
-                    callback(JSON.parse(message, this.#reviver), messageConnection)
-                ));
             } catch (error) {
-                handleError(error, messageConnection);
+                handleError(error);
             }
         });
 
@@ -88,7 +88,7 @@ export class MessageServer {
 
     /**
      * Handles errors.
-     * @param {function(error: any, messageConnection?: MessageConnection): void} callback
+     * @param {function(error: any): void} callback
      */
 
     onError(callback) {
@@ -96,7 +96,7 @@ export class MessageServer {
     }
 
     /**
-     * Receives a message.
+     * Receives a message. TODO: move this to the connection
      * @param {
      *     function(message: any, messageConnection: MessageConnection): void
      * } callback
