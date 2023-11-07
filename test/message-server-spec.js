@@ -36,7 +36,6 @@ describe('MessageServer', () => {
     it('handles errors', done => {
         messageServer = new MessageServer({server: createServer()});
         messageClient = new MessageClient({});
-
         messageClient.send('hello');
 
         messageServer.onConnection(messageConnection => {

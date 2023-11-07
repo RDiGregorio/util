@@ -8,16 +8,24 @@ import {createMapReviver, mapReplacer} from '../src/json.js';
 import {RemoteController} from '../src/remote-controller.js';
 
 describe('RemoteModel', () => {
+    let messageServer, messageClient;
+
+    afterEach(() => {
+        messageServer.close();
+        messageClient.close();
+    });
+
     it('can view a remote object', done => {
-        const messageServer = new MessageServer({
-                server: createServer(),
-                replacer: mapReplacer,
-                reviver: createMapReviver([ObservableMap])
-            }),
-            messageClient = new MessageClient({
-                replacer: mapReplacer,
-                reviver: createMapReviver([ObservableMap])
-            });
+        messageServer = new MessageServer({
+            server: createServer(),
+            replacer: mapReplacer,
+            reviver: createMapReviver([ObservableMap])
+        });
+
+        messageClient = new MessageClient({
+            replacer: mapReplacer,
+            reviver: createMapReviver([ObservableMap])
+        });
 
         const serverModel = new ObservableMap();
         RemoteModel.server(messageServer, () => serverModel);
@@ -29,23 +37,22 @@ describe('RemoteModel', () => {
 
             clientModel.addEventListener(() => {
                 expect(serverModel).to.eql(clientModel);
-                messageClient.close();
-                messageServer.close();
                 done();
             });
         });
     });
 
     it('is compatible with RemoteController', done => {
-        const messageServer = new MessageServer({
-                server: createServer(),
-                replacer: mapReplacer,
-                reviver: createMapReviver([ObservableMap])
-            }),
-            messageClient = new MessageClient({
-                replacer: mapReplacer,
-                reviver: createMapReviver([ObservableMap])
-            });
+        messageServer = new MessageServer({
+            server: createServer(),
+            replacer: mapReplacer,
+            reviver: createMapReviver([ObservableMap])
+        });
+
+        messageClient = new MessageClient({
+            replacer: mapReplacer,
+            reviver: createMapReviver([ObservableMap])
+        });
 
         const serverModel = new ObservableMap(), serverController = {add: (left, right) => left + right};
         RemoteModel.server(messageServer, () => serverModel);
@@ -60,8 +67,6 @@ describe('RemoteModel', () => {
 
                 clientModel.addEventListener(() => {
                     expect(serverModel).to.eql(clientModel);
-                    messageClient.close();
-                    messageServer.close();
                     done();
                 });
             });
