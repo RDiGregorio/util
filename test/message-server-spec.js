@@ -4,10 +4,16 @@ import {MessageServer} from '../src/message-server.js';
 import {MessageClient} from '../src/message-client.js';
 
 describe('MessageServer', () => {
+    let messageServer, messageClient;
+
+    afterEach(() => {
+        messageServer.close();
+        messageClient.close();
+    });
+
     it('can echo', done => {
-        const
-            messageServer = new MessageServer({server: createServer()}),
-            messageClient = new MessageClient({});
+        messageServer = new MessageServer({server: createServer()});
+        messageClient = new MessageClient({});
 
         messageServer.onConnection(messageConnection => messageConnection.onMessage(message =>
             messageConnection.send(message)
@@ -15,8 +21,6 @@ describe('MessageServer', () => {
 
         messageClient.onMessage(message => {
             expect(message).to.equal('hello');
-            messageServer.close();
-            messageClient.close();
             done();
         });
 
@@ -24,15 +28,14 @@ describe('MessageServer', () => {
     });
 
     it('handles close events', done => {
-        const messageServer = new MessageServer({server: createServer()});
-        messageServer.onClose(done);
+        messageServer = new MessageServer({server: createServer()});
         messageServer.close();
+        messageServer.whenClosed.then(done);
     });
 
     it('handles errors', done => {
-        const
-            messageServer = new MessageServer({server: createServer()}),
-            messageClient = new MessageClient({});
+        messageServer = new MessageServer({server: createServer()});
+        messageClient = new MessageClient({});
 
         messageClient.send('hello');
 
@@ -43,8 +46,6 @@ describe('MessageServer', () => {
 
             messageConnection.onError(error => {
                 expect(error.message).to.equal('hello');
-                messageClient.close();
-                messageServer.close();
                 done();
             });
         });
