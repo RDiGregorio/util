@@ -1,5 +1,6 @@
 import {WebSocketServer} from 'ws';
 import {MessageConnection} from './message-connection.js';
+import {createPromise} from "./async.js";
 
 /**
  * A server that can send and receive messages.
@@ -10,6 +11,8 @@ export class MessageServer {
     #replacer;
     #reviver;
     #webSocketServer;
+    #whenClosed;
+    #whenOpened;
     #server;
 
     /**
@@ -25,6 +28,12 @@ export class MessageServer {
         this.#replacer = replacer;
         this.#reviver = reviver;
         this.#webSocketServer = new WebSocketServer({server});
+        const [openPromise, openResolve] = createPromise();
+        server.on('listening', () => openResolve());
+        this.#whenOpened = openPromise;
+        const [closePromise, closeResolve] = createPromise();
+        server.on('close', () => closeResolve());
+        this.#whenClosed = closePromise;
 
         this.#webSocketServer.on('connection', (webSocket, request) => {
             function attempt(callback) {
@@ -53,6 +62,24 @@ export class MessageServer {
     }
 
     /**
+     * Resolves when the server is closed.
+     * @return {Promise<void>}
+     */
+
+    get whenClosed() {
+        return this.#whenClosed;
+    }
+
+    /**
+     * Resolves when the server starts listening for connections.
+     * @return {Promise<void>}
+     */
+
+    get whenOpened() {
+        return this.#whenOpened;
+    }
+
+    /**
      * Stops listening for new connections and closes all existing connections.
      */
 
@@ -61,7 +88,7 @@ export class MessageServer {
     }
 
     /**
-     * Handles a closed server.
+     * Handles a closed server. TODO: remove this, instead use the promise
      * @param {function(): void} callback
      */
 
