@@ -23,12 +23,12 @@ export class MessageClient {
 
     constructor({host = 'localhost', port = 8080, secure = false, replacer, reviver}) {
         this.#webSocket = new WebSocket(`${secure ? 'wss' : 'ws'}://${host}:${port}`);
-        let [promise, resolve] = createPromise();
-        this.#webSocket.on('open', () => resolve());
-        this.#whenOpened = promise;
-        [promise, resolve] = createPromise();
-        this.#webSocket.on('close', () => resolve());
-        this.#whenClosed = promise;
+        const [openPromise, openResolve] = createPromise();
+        this.#webSocket.on('open', () => openResolve());
+        this.#whenOpened = openPromise;
+        const [closePromise, closeResolve] = createPromise();
+        this.#webSocket.on('close', () => closeResolve());
+        this.#whenClosed = closePromise;
         this.#replacer = replacer;
         this.#reviver = reviver;
     }
@@ -92,6 +92,6 @@ export class MessageClient {
      */
 
     send(message) {
-        this.#promise.then(() => this.#webSocket.send(JSON.stringify(message, this.#replacer)));
+        this.#whenOpened.then(() => this.#webSocket.send(JSON.stringify(message, this.#replacer)));
     }
 }
