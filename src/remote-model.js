@@ -76,13 +76,11 @@ export class RemoteModel {
                 if (type === '__model__') messageConnection.send(['__model__', 'update', [], observableMap]);
             });
 
-            const cancel = observableMap.addEventListener((type, path, value) => {
-                try {
-                    messageConnection.send(['__model__', type, path, value]);
-                } catch (error) {
-                    cancel();
-                }
-            });
+            // The listener is canceled when the connection is closed.
+
+            messageConnection.onClose(observableMap.addEventListener((type, path, value) =>
+                messageConnection.send(['__model__', type, path, value])
+            ));
         });
     }
 }
