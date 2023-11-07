@@ -2,7 +2,7 @@ import {RemoteModel} from './remote-model.js';
 import {RemoteController} from './remote-controller.js';
 
 /**
- * Creates a server side model and controller that can be used by a client.
+ * Creates a server side model and controller that can be used by a client. TODO: remove this? it doesn't do enough to justify existing
  */
 
 export class Session {
