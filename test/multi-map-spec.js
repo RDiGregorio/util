@@ -1,8 +1,8 @@
 import {expect} from 'chai';
 import {MultiMap} from '../src/multi-map.js';
 
-describe('MultiMap', function () {
-    it('can have multiple values per key', function (done) {
+describe('MultiMap', () => {
+    it('can have multiple values per key', done => {
         const multiMap = new MultiMap();
         multiMap.set('a', 0);
         multiMap.set('a', 0);
@@ -13,7 +13,7 @@ describe('MultiMap', function () {
         done();
     });
 
-    it('can delete entries', function (done) {
+    it('can delete entries', done => {
         const multiMap = new MultiMap();
         multiMap.set('a', 0);
         multiMap.set('a', 1);
@@ -24,7 +24,7 @@ describe('MultiMap', function () {
         done();
     });
 
-    it('has the correct size', function (done) {
+    it('has the correct size', done => {
         const multiMap = new MultiMap();
         expect(multiMap.size).to.equal(0);
         multiMap.set('a', 0);
@@ -37,7 +37,7 @@ describe('MultiMap', function () {
         done();
     });
 
-    it('it is iterable', function (done) {
+    it('it is iterable', done => {
         const multiMap = new MultiMap();
         multiMap.set('a', 0);
         multiMap.set('b', 1);

@@ -4,8 +4,8 @@ import {RemoteController} from '../src/remote-controller.js';
 import {MessageClient} from '../src/message-client.js';
 import {MessageServer} from '../src/message-server.js';
 
-describe('RemoteController', function () {
-    it('can call remote functions', function (done) {
+describe('RemoteController', () => {
+    it('can call remote functions', done => {
         const
             messageServer = new MessageServer({server: createServer()}),
             messageClient = new MessageClient({});

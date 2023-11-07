@@ -1,8 +1,8 @@
 import {expect} from 'chai';
 import {World} from '../src/world.js';
 
-describe('World', function () {
-    it('can add values', function (done) {
+describe('World', () => {
+    it('can add values', done => {
         const world = new World();
         expect(world.size).to.equal(0);
         world.add('a', 0, 0);
@@ -17,7 +17,7 @@ describe('World', function () {
         done();
     });
 
-    it('can delete values', function (done) {
+    it('can delete values', done => {
         const world = new World();
         world.add('a', 0, 0);
         world.add('a', 0, 0);
@@ -32,7 +32,7 @@ describe('World', function () {
         done();
     });
 
-    it('it is iterable', function (done) {
+    it('it is iterable', done => {
         const world = new World();
         world.add('a', 0, 1);
         world.add('b', 2, 3);

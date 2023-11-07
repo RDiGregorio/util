@@ -7,8 +7,8 @@ import {RemoteModel} from '../src/remote-model.js';
 import {createMapReviver, mapReplacer} from '../src/json.js';
 import {RemoteController} from '../src/remote-controller.js';
 
-describe('RemoteModel', function () {
-    it('can view a remote object', function (done) {
+describe('RemoteModel', () => {
+    it('can view a remote object', done => {
         const messageServer = new MessageServer({
                 server: createServer(),
                 replacer: mapReplacer,
@@ -36,7 +36,7 @@ describe('RemoteModel', function () {
         });
     });
 
-    it('is compatible with RemoteController', function (done) {
+    it('is compatible with RemoteController', done => {
         const messageServer = new MessageServer({
                 server: createServer(),
                 replacer: mapReplacer,

@@ -1,8 +1,8 @@
 import {expect} from 'chai';
 import {Entity} from '../src/entity.js';
 
-describe('Entity', function () {
-    it('can find nearby entities', function (done) {
+describe('Entity', () => {
+    it('can find nearby entities', done => {
         const entities = [new Entity(), new Entity(), new Entity(), new Entity()];
         entities[0].setLocation(undefined, 0, 0);
         entities[1].setLocation(undefined, -1, -1);

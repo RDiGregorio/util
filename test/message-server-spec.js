@@ -3,8 +3,8 @@ import {createServer} from 'http';
 import {MessageServer} from '../src/message-server.js';
 import {MessageClient} from '../src/message-client.js';
 
-describe('MessageServer', function () {
-    it('can echo', function (done) {
+describe('MessageServer', () => {
+    it('can echo', done => {
         const
             messageServer = new MessageServer({server: createServer()}),
             messageClient = new MessageClient({});
@@ -23,13 +23,13 @@ describe('MessageServer', function () {
         messageClient.send('hello');
     });
 
-    it('handles close events', function (done) {
+    it('handles close events', done => {
         const messageServer = new MessageServer({server: createServer()});
         messageServer.onClose(done);
         messageServer.close();
     });
 
-    it('handles errors', function (done) {
+    it('handles errors', done => {
         const
             messageServer = new MessageServer({server: createServer()}),
             messageClient = new MessageClient({});

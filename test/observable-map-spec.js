@@ -1,8 +1,8 @@
 import {expect} from 'chai';
 import {ObservableMap} from '../src/observable-map.js';
 
-describe('ObservableMap', function () {
-    it('can listen for events', function (done) {
+describe('ObservableMap', () => {
+    it('can listen for events', done => {
         let result;
 
         const
