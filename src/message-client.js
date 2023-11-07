@@ -6,8 +6,9 @@ import {createPromise} from './async.js';
  */
 
 export class MessageClient {
-    #promise;
     #webSocket;
+    #whenClosed;
+    #whenOpened;
     #replacer;
     #reviver;
 
@@ -22,11 +23,32 @@ export class MessageClient {
 
     constructor({host = 'localhost', port = 8080, secure = false, replacer, reviver}) {
         this.#webSocket = new WebSocket(`${secure ? 'wss' : 'ws'}://${host}:${port}`);
-        const [promise, resolve] = createPromise();
-        this.#promise = promise;
-        this.#webSocket.on('open', resolve);
+        let [promise, resolve] = createPromise();
+        this.#webSocket.on('open', () => resolve());
+        this.#whenOpened = promise;
+        [promise, resolve] = createPromise();
+        this.#webSocket.on('close', () => resolve());
+        this.#whenClosed = promise;
         this.#replacer = replacer;
         this.#reviver = reviver;
+    }
+
+    /**
+     * Resolves when the connection is closed.
+     * @return {Promise<void>}
+     */
+
+    get whenClosed() {
+        return this.#whenClosed;
+    }
+
+    /**
+     * Resolves when the connection is opened.
+     * @return {Promise<void>}
+     */
+
+    get whenOpened() {
+        return this.#whenOpened;
     }
 
     /**
@@ -38,7 +60,7 @@ export class MessageClient {
     }
 
     /**
-     * Handles a closed connection.
+     * Handles a closed connection. TODO: remove this, instead use the promise
      * @param {function(): void} callback
      */
 

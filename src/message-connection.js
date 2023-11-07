@@ -47,7 +47,7 @@ export class MessageConnection {
     }
 
     /**
-     * Handles a closed connection.
+     * Handles a closed connection. TODO: remove this, instead use the promise
      * @param {function(): void} callback
      */
 
